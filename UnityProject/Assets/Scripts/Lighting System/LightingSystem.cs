@@ -111,6 +111,8 @@ public class LightingSystem : MonoBehaviour
 			}
 
 			mObstacleLightMask = value;
+
+			Shader.SetGlobalTexture("_WallFovMask", value.renderTexture);
 		}
 	}
 
