@@ -11,6 +11,10 @@ public class PlayerHealth : LivingHealthBehaviour
 	private PlayerMove playerMove;
 
 	private PlayerNetworkActions playerNetworkActions;
+	/// <summary>
+	/// Cached register player
+	/// </summary>
+	private RegisterPlayer registerPlayer;
 
 	public bool serverPlayerConscious { get; set; } = true; //Only used on the server
 
@@ -18,6 +22,7 @@ public class PlayerHealth : LivingHealthBehaviour
 	{
 		playerNetworkActions = GetComponent<PlayerNetworkActions>();
 		playerMove = GetComponent<PlayerMove>();
+		registerPlayer = GetComponent<RegisterPlayer>();
 
 		PlayerScript playerScript = GetComponent<PlayerScript>();
 
@@ -30,7 +35,7 @@ public class PlayerHealth : LivingHealthBehaviour
 			ConsciousState = ConsciousState.DEAD;
 
 			// Fixme: No more setting allowInputs on client:
-			// When job selection screen is removed from round start 
+			// When job selection screen is removed from round start
 			// (and moved to preference system in lobby) then we can remove this
 			playerMove.allowInput = false;
 		}
@@ -106,5 +111,12 @@ public class PlayerHealth : LivingHealthBehaviour
 	protected override void OnCritActions()
 	{
 		playerNetworkActions.SetConsciousState(false);
+		registerPlayer.LayDown();
+	}
+
+	protected override void OnUncritActions()
+	{
+		playerNetworkActions.SetConsciousState(false);
+		registerPlayer.GetUp();
 	}
 }

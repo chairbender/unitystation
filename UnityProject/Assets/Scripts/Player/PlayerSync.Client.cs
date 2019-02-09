@@ -114,9 +114,7 @@ public partial class PlayerSync
 					}
 					if (PlayerManager.LocalPlayer == gameObject)
 					{
-						playerSprites.CmdChangeDirection(Orientation.From(action.Direction()));
-						// Prediction:
-						playerSprites.FaceDirection(Orientation.From(action.Direction()));
+						playerSprites.ChangeAndSyncPlayerDirection(Orientation.From(action.Direction()));
 					}
 					//cooldown is longer when humping walls or pushables
 					//					yield return YieldHelper.DeciSecond;

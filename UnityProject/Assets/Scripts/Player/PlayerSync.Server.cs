@@ -333,7 +333,7 @@ public partial class PlayerSync
 			// try pushing things / opening doors
 			BumpInteract( state.WorldPosition, (Vector2) action.Direction() );
 
-			playerSprites.FaceDirection( Orientation.From( action.Direction() ) );
+			playerSprites.LocalFaceDirection( Orientation.From( action.Direction() ) );
 			return state;
 		}
 

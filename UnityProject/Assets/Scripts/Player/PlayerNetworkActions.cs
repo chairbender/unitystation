@@ -38,7 +38,6 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 	private PlayerMove playerMove;
 	private PlayerScript playerScript;
 	private PlayerSprites playerSprites;
-	private RegisterTile registerTile;
 
 	private SoundNetworkActions soundNetworkActions;
 
@@ -54,7 +53,6 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 		playerScript = GetComponent<PlayerScript>();
 		soundNetworkActions = GetComponent<SoundNetworkActions>();
 		chatIcon = GetComponentInChildren<ChatIcon>();
-		registerTile = GetComponentInParent<RegisterTile>();
 	}
 
 	public override void OnStartServer()
@@ -642,17 +640,11 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 		if (conscious)
 		{
 			playerMove.allowInput = true;
-			gameObject.GetComponent<ForceRotation>().Rotation = new Vector3(0, 0, 0);
 		}
 		else
 		{
 			playerMove.allowInput = false;
-			gameObject.GetComponent<ForceRotation>().Rotation = new Vector3(0, 0, -90);
 			soundNetworkActions.RpcPlayNetworkSound("Bodyfall", transform.position);
-			if (Random.value > 0.5f)
-			{
-				playerSprites.currentDirection = Orientation.Up;
-			}
 		}
 		playerScript.pushPull.CmdStopPulling();
 }

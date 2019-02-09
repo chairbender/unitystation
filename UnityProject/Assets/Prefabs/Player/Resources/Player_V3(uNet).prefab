@@ -669,7 +669,6 @@ GameObject:
   - component: {fileID: 114449635359748350}
   - component: {fileID: 50851566022184656}
   - component: {fileID: 114908376472113748}
-  - component: {fileID: 114458435295420412}
   m_Layer: 8
   m_Name: Player_V3(uNet)
   m_TagString: Untagged
@@ -991,7 +990,7 @@ MonoBehaviour:
     m_TypeName: OrientationEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
   ObjectType: 2
-  rotateWithMatrix: 1
+  rotateWithMatrix: 0
 --- !u!114 &114803877374308862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1056,19 +1055,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f68d36ed5e334f99b82dc3801757e89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114458435295420412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1133514949248654}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 275a750a762e9054da6ae10a47b445e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Rotation: {x: 0, y: 0, z: 0}
 --- !u!1 &1147423205297840
 GameObject:
   m_ObjectHideFlags: 0

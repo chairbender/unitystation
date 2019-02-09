@@ -128,7 +128,7 @@ using UnityEngine.Networking;
 
 			if ((PlayerManager.LocalPlayer == gameObject || isServer) && !isReplay)
 			{
-				playerSprites.FaceDirection(Orientation.From(direction.To2Int()));
+				playerSprites.LocalFaceDirection(Orientation.From(direction.To2Int()));
 			}
 
 			if (matrixInfo.MatrixMove)
