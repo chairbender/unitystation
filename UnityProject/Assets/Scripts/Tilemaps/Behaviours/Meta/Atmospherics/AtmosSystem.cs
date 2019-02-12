@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class AtmosSystem : SubsystemBehaviour
 {
-	public bool RunInThread;
-
 	public override void Initialize()
 	{
 		BoundsInt bounds = metaTileMap.GetBounds();
