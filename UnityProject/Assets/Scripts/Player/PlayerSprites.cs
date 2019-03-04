@@ -211,18 +211,14 @@ public class PlayerSprites : NetworkBehaviour
 	/// <param name="direction"></param>
 	public void LocalFaceDirection(Orientation direction)
 	{
-		if (registerPlayer.IsDown || playerSync.isBumping)
-		{
-			//Don't face while bumping is occuring on this frame
-			//or when player is down
-			return;
-		}
 		if (playerMove.isGhost)
 		{
 			SetGhostDir(direction);
 		}
-		else
+		else if (!registerPlayer.IsDown && !playerSync.isBumping)
 		{
+			//Don't face while bumping is occuring on this frame
+			//or when player is down
 			SetBodyDir(direction);
 		}
 	}
