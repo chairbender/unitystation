@@ -214,7 +214,7 @@ public class MouseInputController : MonoBehaviour
 	{
 		Vector3 playerPos;
 
-		if (playerMove.isGhost)
+		if (playerMove.IsGhost)
 			playerPos = PlayerManager.PlayerScript.ghost.transform.position;
 		else
 			playerPos = transform.position;
@@ -444,7 +444,7 @@ public class MouseInputController : MonoBehaviour
 	/// <returns>true iff an interaction occurred</returns>
 	public bool Interact(Transform _transform, Vector3 position, bool isDrag)
 	{
-		if (playerMove.isGhost)
+		if (playerMove.IsGhost)
 		{
 			return false;
 		}

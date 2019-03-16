@@ -18,7 +18,12 @@ public class PlayerMove : NetworkBehaviour
 	public bool diagonalMovement;
 
 	[SyncVar] public bool allowInput = true;
-	[SyncVar] public bool isGhost;
+
+	private bool hasGhostSprites;
+	public bool IsGhost
+	{
+		get => hasGhostSprites;
+	}
 
 	private readonly List<MoveAction> moveActionList = new List<MoveAction>();
 
@@ -44,7 +49,10 @@ public class PlayerMove : NetworkBehaviour
 
 	private void Start()
 	{
+		//TODO: Refactor to use UserControlledSprites
 		playerSprites = gameObject.GetComponent<PlayerSprites>();
+		hasGhostSprites = GetComponent<GhostSprites>() != null;
+
 		registerTile = GetComponent<RegisterTile>();
 		pna = gameObject.GetComponent<PlayerNetworkActions>();
 	}

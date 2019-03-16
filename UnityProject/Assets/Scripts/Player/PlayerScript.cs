@@ -141,7 +141,7 @@ public class PlayerScript : ManagedNetworkBehaviour
 
 	public bool canNotInteract()
 	{
-		return playerMove == null || !playerMove.allowInput || playerMove.isGhost ||
+		return playerMove == null || !playerMove.allowInput || playerMove.IsGhost ||
 			playerHealth.ConsciousState != ConsciousState.CONSCIOUS;
 	}
 
@@ -247,7 +247,7 @@ public class PlayerScript : ManagedNetworkBehaviour
 			return ChatChannel.OOC;
 		}
 		PlayerMove pm = gameObject.GetComponent<PlayerMove>();
-		if (pm.isGhost)
+		if (pm.IsGhost)
 		{
 			ChatChannel ghostTransmitChannels = ChatChannel.Ghost | ChatChannel.OOC;
 			ChatChannel ghostReceiveChannels = ChatChannel.Examine | ChatChannel.System | ChatChannel.Combat;
@@ -299,7 +299,7 @@ public class PlayerScript : ManagedNetworkBehaviour
 	public ChatModifier GetCurrentChatModifiers()
 	{
 		ChatModifier modifiers = ChatModifier.None;
-		if (playerMove.isGhost)
+		if (playerMove.IsGhost)
 		{
 			return ChatModifier.None;
 		}

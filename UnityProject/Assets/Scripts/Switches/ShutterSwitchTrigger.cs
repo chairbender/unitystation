@@ -32,7 +32,7 @@ public class ShutterSwitchTrigger : InputTrigger
 	public override bool Interact(GameObject originator, Vector3 position, string hand)
 	{
 		if (!PlayerManager.LocalPlayerScript.IsInReach(transform.position, 1.5f) ||
-		    PlayerManager.LocalPlayerScript.playerMove.isGhost)
+		    PlayerManager.LocalPlayerScript.playerMove.IsGhost)
 		{
 			return true;
 		}

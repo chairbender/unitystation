@@ -54,11 +54,11 @@ public partial class PlayerSync
 	public bool IsWeightlessServer {
 		get {
 			GameObject[] context = pushPull.IsPullingSomething ? new[]{gameObject, pushPull.PulledObject.gameObject} : new[]{gameObject};
-			return !playerMove.isGhost && MatrixManager.IsFloatingAt( context, Vector3Int.RoundToInt( serverState.WorldPosition ) );
+			return !playerMove.IsGhost && MatrixManager.IsFloatingAt( context, Vector3Int.RoundToInt( serverState.WorldPosition ) );
 		}
 	}
 
-	public bool IsNonStickyServer => !playerMove.isGhost && MatrixManager.IsNonStickyAt(Vector3Int.RoundToInt( serverState.WorldPosition ));
+	public bool IsNonStickyServer => !playerMove.IsGhost && MatrixManager.IsNonStickyAt(Vector3Int.RoundToInt( serverState.WorldPosition ));
 	public bool CanNotSpaceMoveServer => IsWeightlessServer && !IsAroundPushables( serverState );
 
 
@@ -109,7 +109,7 @@ public partial class PlayerSync
 			return;
 		}
 
-		if (playerMove.isGhost)
+		if (playerMove.IsGhost)
 		{
 			return;
 		}
@@ -301,7 +301,7 @@ public partial class PlayerSync
 	[Server]
 	private void TryUpdateServerTarget()
 	{
-		if (serverPendingActions.Count == 0 || playerMove.isGhost) //ignoring serverside ghost movement for now
+		if (serverPendingActions.Count == 0 || playerMove.IsGhost) //ignoring serverside ghost movement for now
 		{
 			return;
 		}

@@ -20,7 +20,6 @@ public partial class PlayerSync
 
 	/// Client predicted state
 	private PlayerState predictedState;
-	private PlayerState ghostPredictedState;
 
 	private Queue<PlayerAction> pendingActions;
 	private Vector2 lastDirection;
@@ -45,9 +44,6 @@ public partial class PlayerSync
 	/// Does client's transform pos match state pos? Ignores Z-axis.
 	private bool ClientPositionReady => (Vector2)predictedState.Position == (Vector2)transform.localPosition;
 
-	/// Does ghosts's transform pos match state pos? Ignores Z-axis.
-	private bool GhostPositionReady => (Vector2)ghostPredictedState.WorldPosition == (Vector2)playerScript.ghost.transform.position;
-
 	// Is true on the frame that the player is bumping into something
 	public bool isBumping;
 	private bool IsWeightlessClient
@@ -55,7 +51,7 @@ public partial class PlayerSync
 		get
 		{
 			GameObject[] context = pushPull.IsPullingSomethingClient ? new[] { gameObject, pushPull.PulledObjectClient.gameObject } : new[] { gameObject };
-			return !playerMove.isGhost && MatrixManager.IsFloatingAt(context, Vector3Int.RoundToInt(predictedState.WorldPosition));
+			return !playerMove.IsGhost && MatrixManager.IsFloatingAt(context, Vector3Int.RoundToInt(predictedState.WorldPosition));
 		}
 	}
 
@@ -74,7 +70,7 @@ public partial class PlayerSync
 	/// </summary>
 	private float predictedSpeedClient;
 
-	public bool IsNonStickyClient => !playerMove.isGhost && MatrixManager.IsNonStickyAt(Vector3Int.RoundToInt(predictedState.WorldPosition));
+	public bool IsNonStickyClient => !playerMove.IsGhost && MatrixManager.IsNonStickyAt(Vector3Int.RoundToInt(predictedState.WorldPosition));
 
 	///Does server claim this client is floating rn?
 	public bool isFloatingClient => playerState.Impulse != Vector2.zero /*&& !IsBeingPulledClient*/;
@@ -104,7 +100,7 @@ public partial class PlayerSync
 		bool isGrounded = !IsNonStickyClient;
 		//			bool isAroundPushables = IsAroundPushables( predictedState ); //? trying to remove this because of garbage
 		/*(isGrounded || isAroundPushables ) &&*/
-		if (!blockClientMovement && (!isPseudoFloatingClient && !isFloatingClient || playerMove.isGhost))
+		if (!blockClientMovement && (!isPseudoFloatingClient && !isFloatingClient || playerMove.IsGhost))
 		{
 			//				Logger.LogTraceFormat( "{0} requesting {1} ({2} in queue)", Category.Movement, gameObject.name, action.Direction(), pendingActions.Count );
 
@@ -115,7 +111,7 @@ public partial class PlayerSync
 
 				action.isRun = UIManager.WalkRun.running;
 
-				if (clientBump == BumpType.None || playerMove.isGhost)
+				if (clientBump == BumpType.None || playerMove.IsGhost)
 				{
 					//move freely
 					pendingActions.Enqueue(action);
@@ -245,7 +241,7 @@ public partial class PlayerSync
 		{
 			//redraw prediction point from received serverState using pending actions
 			PlayerState tempState = playerState;
-			var state = playerMove.isGhost ? ghostPredictedState : predictedState;
+			var state = predictedState;
 			int curPredictedMove = state.MoveNumber;
 
 			foreach (PlayerAction action in pendingActions)
@@ -268,21 +264,15 @@ public partial class PlayerSync
 				OnClientStartMove().Invoke(oldPos.RoundToInt(), newPos.RoundToInt());
 			}
 
-			if (playerMove.isGhost)
-			{
-				ghostPredictedState = tempState;
-			}
-			else
-			{
-				predictedState = tempState;
-			}
+
+			predictedState = tempState;
 
 		}
 	}
 
 	private PlayerState NextStateClient(PlayerState state, PlayerAction action, bool isReplay)
 	{
-		if ( !playerMove.isGhost )
+		if ( !playerMove.IsGhost )
 		{
 			if ( !playerScript.playerHealth.IsSoftCrit )
 			{
@@ -446,17 +436,6 @@ public partial class PlayerSync
 	///Using predictedState for your own player and playerState for others
 	private void CheckMovementClient()
 	{
-
-		//			Lerp();
-		if (playerMove.isGhost)
-		{
-			if (!GhostPositionReady)
-			{
-				//fixme: ghosts position isn't getting updated on server
-				GhostLerp(ghostPredictedState);
-			}
-		}
-
 		playerState.NoLerp = false;
 
 		bool isWeightless = IsWeightlessClient;
