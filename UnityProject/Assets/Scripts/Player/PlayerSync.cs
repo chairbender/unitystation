@@ -98,6 +98,9 @@ public partial class PlayerSync : NetworkBehaviour, IPushable
 	private RaycastHit2D[] rayHit;
 
 	//		private float pullJourney;
+	/// <summary>
+	/// Note - can be null if this is a ghost player
+	/// </summary>
 	private PushPull pushPull;
 	public bool IsBeingPulledServer => pushPull && pushPull.IsBeingPulled;
 	public bool IsBeingPulledClient => pushPull && pushPull.IsBeingPulledClient;
@@ -187,6 +190,11 @@ public partial class PlayerSync : NetworkBehaviour, IPushable
 	/// <returns>the type of bump that occurs at the final destination (after sliding has been attempted)</returns>
 	private BumpType CheckSlideAndBump(PlayerState playerState, ref PlayerAction playerAction)
 	{
+		//bump never happens if we are a ghost
+		if (playerMove.IsGhost)
+		{
+			return BumpType.None;
+		}
 		BumpType bump = MatrixManager.GetBumpTypeAt(playerState, playerAction, gameObject);
 		// if movement is blocked, try to slide
 		if (bump == BumpType.Blocked)
