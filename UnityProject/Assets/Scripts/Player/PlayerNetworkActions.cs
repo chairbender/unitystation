@@ -756,7 +756,7 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 	[ClientRpc]
 	private void RpcShiftToGhost(GameObject ghostObject)
 	{
-		if (PlayerManager.LocalPlayer == gameObject)
+		if (PlayerManager.LocalPlayer == ghostObject)
 		{
 			SoundManager.Stop("Critstate");
 			UIManager.PlayerHealthUI.heartMonitor.overlayCrits.SetState(OverlayState.death);
@@ -773,8 +773,6 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 			mask |= 1 << LayerMask.NameToLayer("Ghosts");
 			Camera2DFollow.followControl.cam.cullingMask = mask;
 		}
-
-		//TODO: Disable input for the corpse?
 	}
 
 	[ClientRpc]
