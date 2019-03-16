@@ -32,7 +32,7 @@ public class PlayerMove : NetworkBehaviour
 		MoveAction.MoveUp, MoveAction.MoveLeft, MoveAction.MoveDown, MoveAction.MoveRight
 	};
 
-	private PlayerSprites playerSprites;
+	private UserControlledSprites playerSprites;
 
 	[HideInInspector] public PlayerNetworkActions pna;
 
@@ -50,7 +50,7 @@ public class PlayerMove : NetworkBehaviour
 	private void Start()
 	{
 		//TODO: Refactor to use UserControlledSprites
-		playerSprites = gameObject.GetComponent<PlayerSprites>();
+		playerSprites = gameObject.GetComponent<UserControlledSprites>();
 		hasGhostSprites = GetComponent<GhostSprites>() != null;
 
 		registerTile = GetComponent<RegisterTile>();

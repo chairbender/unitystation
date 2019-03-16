@@ -91,7 +91,7 @@ public partial class PlayerSync : NetworkBehaviour, IPushable
 
 	public PlayerMove playerMove;
 	private PlayerScript playerScript;
-	private PlayerSprites playerSprites;
+	private UserControlledSprites playerSprites;
 
 	private Matrix Matrix => registerTile.Matrix;
 
@@ -285,7 +285,7 @@ public partial class PlayerSync : NetworkBehaviour, IPushable
 			serverPendingActions = new Queue<PlayerAction>();
 		}
 		playerScript = GetComponent<PlayerScript>();
-		playerSprites = GetComponent<PlayerSprites>();
+		playerSprites = GetComponent<UserControlledSprites>();
 		healthBehaviorScript = GetComponent<LivingHealthBehaviour>();
 		registerTile = GetComponent<RegisterTile>();
 		pushPull = GetComponent<PushPull>();
@@ -296,7 +296,7 @@ public partial class PlayerSync : NetworkBehaviour, IPushable
 		if (isLocalPlayer && playerMove != null)
 		{
 			//				 If being pulled by another player and you try to break free
-			if (pushPull.IsBeingPulledClient)
+			if (pushPull != null && pushPull.IsBeingPulledClient)
 			{
 				if ( !playerScript.canNotInteract() && KeyboardInputManager.IsMovementPressed() )
 				{
@@ -373,13 +373,6 @@ public partial class PlayerSync : NetworkBehaviour, IPushable
 		playerScript.ghost.transform.position = playerState.WorldPosition;
 		ghostPredictedState = playerState;
 		*/
-	}
-
-	private void GhostLerp(PlayerState state)
-	{
-		playerScript.ghost.transform.position =
-			Vector3.MoveTowards(playerScript.ghost.transform.position, state.WorldPosition,
-				playerMove.RunSpeed * Time.deltaTime * playerScript.ghost.transform.position.SpeedTo(state.WorldPosition));
 	}
 
 	private PlayerState NextState(PlayerState state, PlayerAction action, out bool matrixChanged, bool isReplay = false)

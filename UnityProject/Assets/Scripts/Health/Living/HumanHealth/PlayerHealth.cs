@@ -84,6 +84,11 @@ public class PlayerHealth : LivingHealthBehaviour
 			}
 
 			PlayerDeathMessage.Send(gameObject);
+
+
+			//spawn ghost
+			pna.SpawnPlayerGhost();
+
 			//TODO: Refactor this stuff as ghost will be created as a separate object
 			/*
 			//syncvars for everyone

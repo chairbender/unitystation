@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 3920682320074774566}
   - component: {fileID: 2038932850302980570}
   - component: {fileID: 843330595842111116}
+  - component: {fileID: 5563555414371530056}
   m_Layer: 29
   m_Name: Ghost
   m_TagString: Untagged
@@ -95,7 +96,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71f99bb0ad07434da089f740997e6916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ghost: {fileID: 0}
   JobType: 0
   playerName: ' '
 --- !u!114 &3553771700973194240
@@ -122,7 +122,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9451929b6fd9342dab7a272b50ef5aa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGhost: 0
 --- !u!114 &3920682320074774566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137,7 +136,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   diagonalMovement: 1
   allowInput: 1
-  isGhost: 0
   moveList: 05000000060000000700000008000000
   pna: {fileID: 0}
   RunSpeed: 6
@@ -181,3 +179,51 @@ MonoBehaviour:
       PublicKeyToken=null
   ObjectType: 2
   rotateWithMatrix: 0
+--- !u!212 &5563555414371530056
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4390267312333422610}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: c122dd7923e087c48bf08da9da455514, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 1066465801
+  m_SortingLayer: 19
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 21300536, guid: 8d4d1232c46147038b59099d78c772c8, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0

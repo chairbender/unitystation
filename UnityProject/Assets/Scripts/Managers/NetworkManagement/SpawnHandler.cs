@@ -16,7 +16,8 @@ public static class SpawnHandler
 	{
 		var conn = new NetworkConnection();
 		GameObject dummyPlayer = CreatePlayer(jobType);
-		var connectedPlayer = PlayerList.Instance.UpdatePlayer(conn, dummyPlayer);
+		var connectedPlayer = PlayerList.Instance.Get(conn);
+		PlayerList.Instance.UpdatePlayer(conn, dummyPlayer);
 		NetworkServer.AddPlayerForConnection(conn, dummyPlayer, 0);
 		if (connectedPlayer.Script.PlayerSync != null) {
 			connectedPlayer.Script.PlayerSync.NotifyPlayers(true);
@@ -26,12 +27,59 @@ public static class SpawnHandler
 	public static void RespawnPlayer(NetworkConnection conn, short playerControllerId, JobType jobType)
 	{
 		GameObject player = CreatePlayer(jobType);
-		var connectedPlayer = PlayerList.Instance.UpdatePlayer(conn, player);
+		var connectedPlayer = PlayerList.Instance.Get(conn);
+		PlayerList.Instance.UpdatePlayer(conn, player);
 		NetworkServer.ReplacePlayerForConnection(conn, player, playerControllerId);
 		TriggerEventMessage.Send(player, EVENT.PlayerSpawned);
 		if (connectedPlayer.Script.PlayerSync != null) {
 			connectedPlayer.Script.PlayerSync.NotifyPlayers(true);
 		}
+	}
+
+	/// <summary>
+	/// Spawn the ghost as a new object and set that as the focus / what the user controls. Leave the player body where it is.
+	/// </summary>
+	/// <param name="conn">connection whose ghost is being spawned</param>
+	/// <param name="playerControllerId">ID of player whose ghost should be spawned</param>
+	/// <returns>the gameobject of the ghost</returns>
+	public static GameObject SpawnPlayerGhost(NetworkConnection conn, short playerControllerId)
+	{
+		var connectedPlayer = PlayerList.Instance.Get(conn);
+		GameObject ghost = CreateGhost(connectedPlayer);
+		PlayerList.Instance.UpdatePlayer(conn, ghost);
+		NetworkServer.ReplacePlayerForConnection(conn, ghost, playerControllerId);
+		TriggerEventMessage.Send(ghost, EVENT.GhostSpawned);
+		if (connectedPlayer.Script.PlayerSync != null) {
+			connectedPlayer.Script.PlayerSync.NotifyPlayers(true);
+		}
+
+		return ghost;
+	}
+
+	private static GameObject CreateGhost(ConnectedPlayer forPlayer)
+	{
+		GameObject ghostPrefab = CustomNetworkManager.Instance.ghostPrefab;
+
+		Transform spawnPosition = forPlayer.GameObject.transform;
+
+		GameObject ghost;
+
+		if (spawnPosition != null)
+		{
+			Vector3 position = spawnPosition.position;
+			Quaternion rotation = spawnPosition.rotation;
+			Transform parent = spawnPosition.GetComponentInParent<ObjectLayer>().transform;
+			ghost = Object.Instantiate(ghostPrefab, position, rotation, parent);
+			ghost.GetComponent<RegisterPlayer>().ParentNetId = spawnPosition.parent.GetComponentInParent<NetworkIdentity>().netId;
+		}
+		else
+		{
+			ghost = Object.Instantiate(ghostPrefab);
+		}
+
+		ghost.GetComponent<PlayerScript>().JobType = JobType.NULL;
+
+		return ghost;
 	}
 
 	private static GameObject CreatePlayer(JobType jobType)

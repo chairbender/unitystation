@@ -12,7 +12,7 @@ public class RegisterPlayer : RegisterTile
 	/// </summary>
 	private bool isDown;
 
-	private PlayerSprites playerSprites;
+	private UserControlledSprites playerSprites;
 
 	public bool IsBlocking { get; set; } = true;
 	/// <summary>
@@ -21,7 +21,7 @@ public class RegisterPlayer : RegisterTile
 	public bool IsDown => isDown;
 	private void Awake()
 	{
-		playerSprites = GetComponent<PlayerSprites>();
+		playerSprites = GetComponent<UserControlledSprites>();
 		//initially we are upright and don't rotate with the matrix
 		rotateWithMatrix = false;
 	}

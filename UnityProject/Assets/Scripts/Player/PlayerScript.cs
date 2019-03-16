@@ -10,8 +10,6 @@ public class PlayerScript : ManagedNetworkBehaviour
 	//hence top reach is slightly lower than bottom reach, where the legs go exactly to the bottom of the tile.
 	public const float interactionDistance = 1.75f;
 
-	public GameObject ghost;
-
 	[SyncVar] public JobType JobType = JobType.NULL;
 
 	private float pingUpdate;
@@ -24,13 +22,20 @@ public class PlayerScript : ManagedNetworkBehaviour
 
 	public WeaponNetworkActions weaponNetworkActions { get; set; }
 
+	/// <summary>
+	/// Will be null if player is a ghost.
+	/// </summary>
 	public PlayerHealth playerHealth { get; set; }
 
 	public PlayerMove playerMove { get; set; }
 
+	/// <summary>
+	/// Will be null if player is a ghost.
+	/// </summary>
 	public ObjectBehaviour pushPull { get; set; }
 
-	public PlayerSprites playerSprites { get; set; }
+	//TODO: Refactor to PlayerGhostSprites
+	public UserControlledSprites playerSprites { get; set; }
 
 	private PlayerSync _playerSync; //Example of good on-demand reference init
 	public PlayerSync PlayerSync => _playerSync ? _playerSync : (_playerSync = GetComponent<PlayerSync>());
@@ -96,7 +101,7 @@ public class PlayerScript : ManagedNetworkBehaviour
 		mouseInputController = GetComponent<MouseInputController>();
 		hitIcon = GetComponentInChildren<HitIcon>(true);
 		playerMove = GetComponent<PlayerMove>();
-		playerSprites = GetComponent<PlayerSprites>();
+		playerSprites = GetComponent<UserControlledSprites>();
 	}
 
 	private void Init()

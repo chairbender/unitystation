@@ -37,12 +37,10 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 	private Equipment equipment;
 	private PlayerMove playerMove;
 	private PlayerScript playerScript;
-	private PlayerSprites playerSprites;
+	private UserControlledSprites playerSprites;
 	private ObjectBehaviour objectBehaviour;
 
 	public Dictionary<string, InventorySlot> Inventory { get; } = new Dictionary<string, InventorySlot>();
-
-	public bool isGhost;
 
 	private static readonly Vector3 FALLEN = new Vector3(0, 0, -90);
 	private static readonly Vector3 STRAIGHT = Vector3.zero;
@@ -51,7 +49,7 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 	{
 		equipment = GetComponent<Equipment>();
 		playerMove = GetComponent<PlayerMove>();
-		playerSprites = GetComponent<PlayerSprites>();
+		playerSprites = GetComponent<UserControlledSprites>();
 		playerScript = GetComponent<PlayerScript>();
 		chatIcon = GetComponentInChildren<ChatIcon>();
 		objectBehaviour = GetComponent<ObjectBehaviour>();
@@ -719,19 +717,50 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 		GetComponent<LivingHealthBehaviour>().ApplyDamage(gameObject, 1000, DamageType.Brute, BodyPartType.Chest);
 	}
 
-	[ClientRpc]
-	public void RpcSpawnGhost()
+	//Respawn action for Deathmatch v 0.1.3
+
+	[Server]
+	public void RespawnPlayer(int timeout = 0)
 	{
-		isGhost = true;
-		playerScript.ghost.SetActive(true);
-		playerScript.ghost.transform.parent = null;
-		chatIcon.gameObject.transform.parent = playerScript.ghost.transform;
-		playerScript.ghost.transform.rotation = Quaternion.identity;
+		if (GameManager.Instance.RespawnAllowed)
+		{
+			StartCoroutine(InitiateRespawn(timeout));
+		}
+	}
+
+	/// <summary>
+	/// Spawn the ghost for this player and tell the client to switch input / camera to it
+	/// </summary>
+	[Server]
+	public void SpawnPlayerGhost()
+	{
+		GameObject ghostPlayer = SpawnHandler.SpawnPlayerGhost(connectionToClient, playerControllerId);
+		RpcShiftToGhost(ghostPlayer);
+	}
+
+
+	[Server]
+	private IEnumerator InitiateRespawn(int timeout)
+	{
+		//Debug.LogFormat("{0}: Initiated respawn in {1}s", gameObject.name, timeout);
+		yield return new WaitForSeconds(timeout);
+		RpcAdjustForRespawn();
+
+		SpawnHandler.RespawnPlayer(connectionToClient, playerControllerId, playerScript.JobType);
+	}
+
+	/// <summary>
+	/// Shifts input / camera focus from this body to ghostObject.
+	/// </summary>
+	/// <param name="ghostObject">gameobject of the ghost</param>
+	[ClientRpc]
+	private void RpcShiftToGhost(GameObject ghostObject)
+	{
 		if (PlayerManager.LocalPlayer == gameObject)
 		{
 			SoundManager.Stop("Critstate");
 			UIManager.PlayerHealthUI.heartMonitor.overlayCrits.SetState(OverlayState.death);
-			Camera2DFollow.followControl.target = playerScript.ghost.transform;
+			Camera2DFollow.followControl.target = ghostObject.transform;
 			Camera2DFollow.followControl.damping = 0.0f;
 			FieldOfView fovScript = GetComponent<FieldOfView>();
 			if (fovScript != null)
@@ -744,32 +773,15 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 			mask |= 1 << LayerMask.NameToLayer("Ghosts");
 			Camera2DFollow.followControl.cam.cullingMask = mask;
 		}
-	}
 
-	//Respawn action for Deathmatch v 0.1.3
-
-	[Server]
-	public void RespawnPlayer(int timeout = 0)
-	{
-		if (GameManager.Instance.RespawnAllowed)
-		{
-			StartCoroutine(InitiateRespawn(timeout));
-		}
-	}
-
-	[Server]
-	private IEnumerator InitiateRespawn(int timeout)
-	{
-		//Debug.LogFormat("{0}: Initiated respawn in {1}s", gameObject.name, timeout);
-		yield return new WaitForSeconds(timeout);
-		RpcAdjustForRespawn();
-
-		SpawnHandler.RespawnPlayer(connectionToClient, playerControllerId, playerScript.JobType);
+		//TODO: Disable input for the corpse?
 	}
 
 	[ClientRpc]
 	private void RpcAdjustForRespawn()
 	{
+		//TODO: This needs to be completely changed
+		/*
 		ClosetPlayerHandler cph = GetComponent<ClosetPlayerHandler>();
 		if (cph != null)
 		{
@@ -786,6 +798,7 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 		Camera2DFollow.followControl.cam.cullingMask = mask;
 
 		gameObject.GetComponent<MouseInputController>().enabled = false;
+		*/
 	}
 
 	//FOOD

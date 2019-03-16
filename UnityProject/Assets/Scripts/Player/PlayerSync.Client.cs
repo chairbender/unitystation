@@ -50,8 +50,12 @@ public partial class PlayerSync
 	{
 		get
 		{
+			if (playerMove.IsGhost)
+			{
+				return false;
+			}
 			GameObject[] context = pushPull.IsPullingSomethingClient ? new[] { gameObject, pushPull.PulledObjectClient.gameObject } : new[] { gameObject };
-			return !playerMove.IsGhost && MatrixManager.IsFloatingAt(context, Vector3Int.RoundToInt(predictedState.WorldPosition));
+			return MatrixManager.IsFloatingAt(context, Vector3Int.RoundToInt(predictedState.WorldPosition));
 		}
 	}
 
@@ -305,7 +309,7 @@ public partial class PlayerSync
 
 		//Ignore "Follow Updates" if you're pulling it
 		if (newState.Active
-			 && pushPull.IsPulledByClient(PlayerManager.LocalPlayerScript?.pushPull)
+			 && pushPull != null && pushPull.IsPulledByClient(PlayerManager.LocalPlayerScript?.pushPull)
 		)
 		{
 			return;

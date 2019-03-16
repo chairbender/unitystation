@@ -27,7 +27,7 @@ public class MouseInputController : MonoBehaviour
 	private LayerMask layerMask;
 	private ObjectBehaviour objectBehaviour;
 	private PlayerMove playerMove;
-	private PlayerSprites playerSprites;
+	private UserControlledSprites playerSprites;
 	/// reference to the global lighting system, used to check occlusion
 	private LightingSystem lightingSystem;
 
@@ -47,7 +47,7 @@ public class MouseInputController : MonoBehaviour
 	private void Start()
 	{
 		//for changing direction on click
-		playerSprites = gameObject.GetComponent<PlayerSprites>();
+		playerSprites = gameObject.GetComponent<UserControlledSprites>();
 		playerMove = GetComponent<PlayerMove>();
 		objectBehaviour = GetComponent<ObjectBehaviour>();
 
@@ -214,10 +214,7 @@ public class MouseInputController : MonoBehaviour
 	{
 		Vector3 playerPos;
 
-		if (playerMove.IsGhost)
-			playerPos = PlayerManager.PlayerScript.ghost.transform.position;
-		else
-			playerPos = transform.position;
+		playerPos = transform.position;
 
 		Vector2 dir = (MousePosition - playerPos).normalized;
 
