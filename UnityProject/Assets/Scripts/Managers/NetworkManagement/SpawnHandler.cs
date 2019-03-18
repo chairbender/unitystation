@@ -60,22 +60,15 @@ public static class SpawnHandler
 	{
 		GameObject ghostPrefab = CustomNetworkManager.Instance.ghostPrefab;
 
-		Transform spawnPosition = forPlayer.GameObject.transform;
+		Vector3 spawnPosition = forPlayer.GameObject.GetComponent<ObjectBehaviour>().AssumedLocation();
+		GameObject body = forPlayer.GameObject;
 
 		GameObject ghost;
 
-		if (spawnPosition != null)
-		{
-			Vector3 position = spawnPosition.position;
-			Quaternion rotation = spawnPosition.rotation;
-			Transform parent = spawnPosition.GetComponentInParent<ObjectLayer>().transform;
-			ghost = Object.Instantiate(ghostPrefab, position, rotation, parent);
-			ghost.GetComponent<RegisterPlayer>().ParentNetId = spawnPosition.parent.GetComponentInParent<NetworkIdentity>().netId;
-		}
-		else
-		{
-			ghost = Object.Instantiate(ghostPrefab);
-		}
+		Transform parent = body.GetComponentInParent<ObjectLayer>().transform;
+		ghost = Object.Instantiate(ghostPrefab, spawnPosition, Quaternion.identity, parent);
+		ghost.GetComponent<RegisterPlayer>().ParentNetId = body.transform.parent.GetComponentInParent<NetworkIdentity>().netId;
+
 
 		//they are a ghost but we still need to preserve job type so they can respawn with the correct job
 		ghost.GetComponent<PlayerScript>().JobType = jobType;
