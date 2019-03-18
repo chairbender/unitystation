@@ -191,7 +191,7 @@ public partial class PlayerSync : NetworkBehaviour, IPushable
 	private BumpType CheckSlideAndBump(PlayerState playerState, ref PlayerAction playerAction)
 	{
 		//bump never happens if we are a ghost
-		if (playerMove.IsGhost)
+		if (playerScript.IsGhost)
 		{
 			return BumpType.None;
 		}

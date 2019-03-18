@@ -19,12 +19,6 @@ public class PlayerMove : NetworkBehaviour
 
 	[SyncVar] public bool allowInput = true;
 
-	private bool hasGhostSprites;
-	public bool IsGhost
-	{
-		get => hasGhostSprites;
-	}
-
 	private readonly List<MoveAction> moveActionList = new List<MoveAction>();
 
 	public MoveAction[] moveList =
@@ -51,7 +45,6 @@ public class PlayerMove : NetworkBehaviour
 	{
 		//TODO: Refactor to use UserControlledSprites
 		playerSprites = gameObject.GetComponent<UserControlledSprites>();
-		hasGhostSprites = GetComponent<GhostSprites>() != null;
 
 		registerTile = GetComponent<RegisterTile>();
 		pna = gameObject.GetComponent<PlayerNetworkActions>();

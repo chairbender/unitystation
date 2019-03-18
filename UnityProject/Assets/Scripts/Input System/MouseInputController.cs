@@ -115,6 +115,13 @@ public class MouseInputController : MonoBehaviour
 
 	private void CheckClick()
 	{
+		//currently there is nothing for ghosts to interact with, they only can change facing
+		if (PlayerManager.LocalPlayerScript.IsGhost)
+		{
+			ChangeDirection();
+			return;
+		}
+
 		bool ctrlClick = KeyboardInputManager.IsControlPressed();
 		if (!ctrlClick)
 		{
@@ -441,7 +448,7 @@ public class MouseInputController : MonoBehaviour
 	/// <returns>true iff an interaction occurred</returns>
 	public bool Interact(Transform _transform, Vector3 position, bool isDrag)
 	{
-		if (playerMove.IsGhost)
+		if (PlayerManager.LocalPlayerScript.IsGhost)
 		{
 			return false;
 		}

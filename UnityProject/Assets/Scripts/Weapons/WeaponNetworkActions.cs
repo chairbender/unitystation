@@ -69,7 +69,7 @@ public class WeaponNetworkActions : ManagedNetworkBehaviour
 		BodyPartType damageZone, LayerType layerType)
 	{
 		if (!playerMove.allowInput ||
-			playerMove.IsGhost ||
+			playerScript.IsGhost ||
 			!victim ||
 			!playerScript.playerNetworkActions.SlotNotEmpty(slot) ||
 			!playerScript.playerHealth.serverPlayerConscious

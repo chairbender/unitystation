@@ -124,6 +124,25 @@ public class PlayerScript : ManagedNetworkBehaviour
 
 			PlayerManager.SetPlayerForControl(gameObject);
 
+			if (IsGhost)
+			{
+				//stop the crit notification and change overlay to ghost mode
+				SoundManager.Stop("Critstate");
+				UIManager.PlayerHealthUI.heartMonitor.overlayCrits.SetState(OverlayState.death);
+				//show ghosts
+				var mask = Camera2DFollow.followControl.cam.cullingMask;
+				mask |= 1 << LayerMask.NameToLayer("Ghosts");
+				Camera2DFollow.followControl.cam.cullingMask = mask;
+
+			}
+			else
+			{
+				//Hide ghosts
+				var mask = Camera2DFollow.followControl.cam.cullingMask;
+				mask &= ~(1 << LayerMask.NameToLayer("Ghosts"));
+				Camera2DFollow.followControl.cam.cullingMask = mask;
+			}
+
 			//				Request sync to get all the latest transform data
 			new RequestSyncMessage().Send();
 			SelectedChannels = ChatChannel.Local;
@@ -146,7 +165,7 @@ public class PlayerScript : ManagedNetworkBehaviour
 
 	public bool canNotInteract()
 	{
-		return playerMove == null || !playerMove.allowInput || playerMove.IsGhost ||
+		return playerMove == null || !playerMove.allowInput || IsGhost ||
 			playerHealth.ConsciousState != ConsciousState.CONSCIOUS;
 	}
 
@@ -195,6 +214,10 @@ public class PlayerScript : ManagedNetworkBehaviour
 	}
 
 	public bool IsHidden => !PlayerSync.ClientState.Active;
+	/// <summary>
+	/// True if this player is a ghost, meaning they exist in the ghost layer
+	/// </summary>
+	public bool IsGhost => gameObject.layer == 31;
 
 	public bool IsInReach(GameObject go, float interactDist = interactionDistance)
 	{
@@ -252,7 +275,7 @@ public class PlayerScript : ManagedNetworkBehaviour
 			return ChatChannel.OOC;
 		}
 		PlayerMove pm = gameObject.GetComponent<PlayerMove>();
-		if (pm.IsGhost)
+		if (IsGhost)
 		{
 			ChatChannel ghostTransmitChannels = ChatChannel.Ghost | ChatChannel.OOC;
 			ChatChannel ghostReceiveChannels = ChatChannel.Examine | ChatChannel.System | ChatChannel.Combat;
@@ -304,7 +327,7 @@ public class PlayerScript : ManagedNetworkBehaviour
 	public ChatModifier GetCurrentChatModifiers()
 	{
 		ChatModifier modifiers = ChatModifier.None;
-		if (playerMove.IsGhost)
+		if (IsGhost)
 		{
 			return ChatModifier.None;
 		}

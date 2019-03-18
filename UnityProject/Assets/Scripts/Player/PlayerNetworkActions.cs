@@ -73,6 +73,12 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 			}
 
 			SyncPlayerInventoryGuidMessage.Send(gameObject, initSync);
+
+			//if this is the ghost, respawn after 10 seconds
+			if (playerScript.IsGhost)
+			{
+				RespawnPlayer(10);
+			}
 		}
 
 		base.OnStartServer();
@@ -734,8 +740,9 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 	[Server]
 	public void SpawnPlayerGhost()
 	{
-		GameObject ghostPlayer = SpawnHandler.SpawnPlayerGhost(connectionToClient, playerControllerId);
-		RpcShiftToGhost(ghostPlayer);
+		RpcBeforeGhost();
+		SpawnHandler.SpawnPlayerGhost(connectionToClient, playerControllerId);
+
 	}
 
 
@@ -744,59 +751,43 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 	{
 		//Debug.LogFormat("{0}: Initiated respawn in {1}s", gameObject.name, timeout);
 		yield return new WaitForSeconds(timeout);
-		RpcAdjustForRespawn();
-
 		SpawnHandler.RespawnPlayer(connectionToClient, playerControllerId, playerScript.JobType);
+		RpcAfterRespawn();
 	}
 
 	/// <summary>
-	/// Shifts input / camera focus from this body to ghostObject.
+	/// Invoked before the ghost is going to be created and input will be shifted to ghost. Allows this body object
+	/// to perform needed cleanup. Note this will be invoked on all clients.
 	/// </summary>
-	/// <param name="ghostObject">gameobject of the ghost</param>
+	/// <param name="bodyObject">object which was turned into a ghost</param>
 	[ClientRpc]
-	private void RpcShiftToGhost(GameObject ghostObject)
+	private void RpcBeforeGhost()
 	{
-		if (PlayerManager.LocalPlayer == ghostObject)
-		{
-			SoundManager.Stop("Critstate");
-			UIManager.PlayerHealthUI.heartMonitor.overlayCrits.SetState(OverlayState.death);
-			Camera2DFollow.followControl.target = ghostObject.transform;
-			Camera2DFollow.followControl.damping = 0.0f;
-			FieldOfView fovScript = GetComponent<FieldOfView>();
-			if (fovScript != null)
-			{
-				fovScript.enabled = false;
-			}
-
-			//Show ghosts and hide FieldOfView
-			var mask = Camera2DFollow.followControl.cam.cullingMask;
-			mask |= 1 << LayerMask.NameToLayer("Ghosts");
-			Camera2DFollow.followControl.cam.cullingMask = mask;
-		}
-	}
-
-	[ClientRpc]
-	private void RpcAdjustForRespawn()
-	{
-		//TODO: This needs to be completely changed
-		/*
+		//only need to clean up client side if we are controlling the body who is becoming a ghost
+		//no more closet handler, they are dead
 		ClosetPlayerHandler cph = GetComponent<ClosetPlayerHandler>();
 		if (cph != null)
 		{
 			Destroy(cph);
 		}
 
-		Camera2DFollow.followControl.damping = 0.0f;
-		playerScript.ghost.SetActive(false);
-		isGhost = false;
-		//Hide ghosts and show FieldOfView
+		//no more input can be sent to the body.
+		MouseInputController mouseInput = GetComponent<MouseInputController>();
+		if (mouseInput != null)
+		{
+			Destroy(mouseInput);
+		}
+	}
 
-		var mask = Camera2DFollow.followControl.cam.cullingMask;
-		mask &= ~(1 << LayerMask.NameToLayer("Ghosts"));
-		Camera2DFollow.followControl.cam.cullingMask = mask;
-
-		gameObject.GetComponent<MouseInputController>().enabled = false;
-		*/
+	/// <summary>
+	/// Invoked after our respawn is going to be performed by the server. Destroys the ghost.
+	/// Note this will be invoked on all clients.
+	/// </summary>
+	[ClientRpc]
+	private void RpcAfterRespawn()
+	{
+		//this ghost is not needed anymore
+		Destroy(gameObject);
 	}
 
 	//FOOD

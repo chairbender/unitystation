@@ -142,7 +142,7 @@ public class Hands : MonoBehaviour
 		{
 			// TODO tidy up this if statement once it's working correctly
 			if (!PlayerManager.LocalPlayerScript.playerMove.allowInput ||
-				PlayerManager.LocalPlayerScript.playerMove.IsGhost)
+				PlayerManager.LocalPlayerScript.IsGhost)
 			{
 				Logger.Log("Invalid player, cannot perform action!");
 				return false;

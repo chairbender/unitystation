@@ -42,21 +42,21 @@ public static class SpawnHandler
 	/// <param name="conn">connection whose ghost is being spawned</param>
 	/// <param name="playerControllerId">ID of player whose ghost should be spawned</param>
 	/// <returns>the gameobject of the ghost</returns>
-	public static GameObject SpawnPlayerGhost(NetworkConnection conn, short playerControllerId)
+	public static void SpawnPlayerGhost(NetworkConnection conn, short playerControllerId)
 	{
 		var connectedPlayer = PlayerList.Instance.Get(conn);
-		GameObject ghost = CreateGhost(connectedPlayer);
+		GameObject body = connectedPlayer.GameObject;
+		JobType savedJobType = body.GetComponent<PlayerScript>().JobType;
+		GameObject ghost = CreateGhost(connectedPlayer, savedJobType);
 		PlayerList.Instance.UpdatePlayer(conn, ghost);
 		NetworkServer.ReplacePlayerForConnection(conn, ghost, playerControllerId);
 		TriggerEventMessage.Send(ghost, EVENT.GhostSpawned);
 		if (connectedPlayer.Script.PlayerSync != null) {
 			connectedPlayer.Script.PlayerSync.NotifyPlayers(true);
 		}
-
-		return ghost;
 	}
 
-	private static GameObject CreateGhost(ConnectedPlayer forPlayer)
+	private static GameObject CreateGhost(ConnectedPlayer forPlayer, JobType jobType)
 	{
 		GameObject ghostPrefab = CustomNetworkManager.Instance.ghostPrefab;
 
@@ -77,7 +77,8 @@ public static class SpawnHandler
 			ghost = Object.Instantiate(ghostPrefab);
 		}
 
-		ghost.GetComponent<PlayerScript>().JobType = JobType.NULL;
+		//they are a ghost but we still need to preserve job type so they can respawn with the correct job
+		ghost.GetComponent<PlayerScript>().JobType = jobType;
 
 		return ghost;
 	}

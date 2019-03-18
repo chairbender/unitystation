@@ -120,7 +120,7 @@ public class ControlChat : MonoBehaviour
         }
         else
         {
-            if (PlayerManager.LocalPlayerScript.playerMove.IsGhost)
+            if (PlayerManager.LocalPlayerScript.IsGhost)
             {
                 //dead chat only
                 PostToChatMessage.Send(InputFieldChat.text, ChatChannel.Ghost);

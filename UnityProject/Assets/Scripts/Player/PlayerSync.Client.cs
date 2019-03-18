@@ -50,7 +50,7 @@ public partial class PlayerSync
 	{
 		get
 		{
-			if (playerMove.IsGhost)
+			if (playerScript.IsGhost)
 			{
 				return false;
 			}
@@ -74,7 +74,7 @@ public partial class PlayerSync
 	/// </summary>
 	private float predictedSpeedClient;
 
-	public bool IsNonStickyClient => !playerMove.IsGhost && MatrixManager.IsNonStickyAt(Vector3Int.RoundToInt(predictedState.WorldPosition));
+	public bool IsNonStickyClient => !playerScript.IsGhost && MatrixManager.IsNonStickyAt(Vector3Int.RoundToInt(predictedState.WorldPosition));
 
 	///Does server claim this client is floating rn?
 	public bool isFloatingClient => playerState.Impulse != Vector2.zero /*&& !IsBeingPulledClient*/;
@@ -104,7 +104,7 @@ public partial class PlayerSync
 		bool isGrounded = !IsNonStickyClient;
 		//			bool isAroundPushables = IsAroundPushables( predictedState ); //? trying to remove this because of garbage
 		/*(isGrounded || isAroundPushables ) &&*/
-		if (!blockClientMovement && (!isPseudoFloatingClient && !isFloatingClient || playerMove.IsGhost))
+		if (!blockClientMovement && (!isPseudoFloatingClient && !isFloatingClient || playerScript.IsGhost))
 		{
 			//				Logger.LogTraceFormat( "{0} requesting {1} ({2} in queue)", Category.Movement, gameObject.name, action.Direction(), pendingActions.Count );
 
@@ -115,7 +115,7 @@ public partial class PlayerSync
 
 				action.isRun = UIManager.WalkRun.running;
 
-				if (clientBump == BumpType.None || playerMove.IsGhost)
+				if (clientBump == BumpType.None || playerScript.IsGhost)
 				{
 					//move freely
 					pendingActions.Enqueue(action);
@@ -276,7 +276,7 @@ public partial class PlayerSync
 
 	private PlayerState NextStateClient(PlayerState state, PlayerAction action, bool isReplay)
 	{
-		if ( !playerMove.IsGhost )
+		if ( !playerScript.IsGhost )
 		{
 			if ( !playerScript.playerHealth.IsSoftCrit )
 			{

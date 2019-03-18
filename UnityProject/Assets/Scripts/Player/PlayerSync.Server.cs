@@ -53,7 +53,7 @@ public partial class PlayerSync
 	///
 	public bool IsWeightlessServer {
 		get {
-			if (playerMove.IsGhost)
+			if (playerScript.IsGhost)
 			{
 				return false;
 			}
@@ -62,7 +62,7 @@ public partial class PlayerSync
 		}
 	}
 
-	public bool IsNonStickyServer => !playerMove.IsGhost && MatrixManager.IsNonStickyAt(Vector3Int.RoundToInt( serverState.WorldPosition ));
+	public bool IsNonStickyServer => !playerScript.IsGhost && MatrixManager.IsNonStickyAt(Vector3Int.RoundToInt( serverState.WorldPosition ));
 	public bool CanNotSpaceMoveServer => IsWeightlessServer && !IsAroundPushables( serverState );
 
 
