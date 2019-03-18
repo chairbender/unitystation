@@ -88,19 +88,6 @@ public class PlayerHealth : LivingHealthBehaviour
 
 			//spawn ghost
 			pna.SpawnPlayerGhost();
-
-			//TODO: Refactor this stuff as ghost will be created as a separate object
-			/*
-			//syncvars for everyone
-			pm.IsGhost = true;
-			pm.allowInput = true;
-			//consider moving into PlayerDeathMessage.Process()
-			pna.RpcSpawnGhost();
-			RpcPassBullets(gameObject);
-
-			//FIXME Remove for next demo
-			pna.RespawnPlayer(10);
-			*/
 		}
 	}
 

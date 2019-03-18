@@ -34,7 +34,6 @@ public class PlayerScript : ManagedNetworkBehaviour
 	/// </summary>
 	public ObjectBehaviour pushPull { get; set; }
 
-	//TODO: Refactor to PlayerGhostSprites
 	public UserControlledSprites playerSprites { get; set; }
 
 	private PlayerSync _playerSync; //Example of good on-demand reference init

@@ -43,7 +43,6 @@ public class PlayerMove : NetworkBehaviour
 
 	private void Start()
 	{
-		//TODO: Refactor to use UserControlledSprites
 		playerSprites = gameObject.GetComponent<UserControlledSprites>();
 
 		registerTile = GetComponent<RegisterTile>();

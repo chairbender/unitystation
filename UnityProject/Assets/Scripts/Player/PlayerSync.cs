@@ -374,15 +374,6 @@ public partial class PlayerSync : NetworkBehaviour, IPushable
 		}
 	}
 
-	public void OnBecomeGhost()
-	{
-		//TODO: Refactor to spawn as spearate object
-		/*
-		playerScript.ghost.transform.position = playerState.WorldPosition;
-		ghostPredictedState = playerState;
-		*/
-	}
-
 	private PlayerState NextState(PlayerState state, PlayerAction action, out bool matrixChanged, bool isReplay = false)
 	{
 		var newState = state;
@@ -462,16 +453,6 @@ public partial class PlayerSync : NetworkBehaviour, IPushable
 		Gizmos.DrawWireCube(clientPrediction, size3);
 		GizmoUtils.DrawArrow(clientPrediction + Vector3.left / 5, predictedState.Impulse);
 		if (drawMoves) GizmoUtils.DrawText(predictedState.MoveNumber.ToString(), clientPrediction + Vector3.left, 15);
-
-		//client ghostState
-		//TODO: refactor to work with new ghost system
-		/*
-		Gizmos.color = color6;
-		Vector3 ghostPrediction = ghostPredictedState.WorldPosition;
-		Gizmos.DrawWireCube(ghostPrediction, size6);
-		//			GizmoUtils.DrawArrow( ghostPrediction + Vector3.left / 5, predictedState.Impulse );
-		if (drawMoves) GizmoUtils.DrawText(ghostPredictedState.MoveNumber.ToString(), ghostPrediction + Vector3.up / 2, 15);
-		*/
 
 		//client playerState
 		Gizmos.color = color4;
