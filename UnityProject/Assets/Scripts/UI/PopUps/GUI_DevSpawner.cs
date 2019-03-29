@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 /// <summary>
 /// Main logic for the dev spawner menu
@@ -37,5 +39,20 @@ public class GUI_DevSpawner : MonoBehaviour
 		SoundManager.Play("Click01");
 		Logger.Log("Closing dev spawner menu", Category.UI);
 		transform.GetChild(0).gameObject.SetActive(false);
+	}
+
+	public void SpawnCoffee()
+	{
+		var coffeeprefab = Resources.Load("Coffee") as GameObject;
+		Vector3 position = PlayerManager.LocalPlayer.transform.position;
+		Transform parent = PlayerManager.LocalPlayer.transform.parent;
+		var coffeeInstance = Object.Instantiate(coffeeprefab, position, Quaternion.identity, parent);
+		var spawneableState = coffeeInstance.GetComponent<IHasSpawneableState>();
+		//instantiate the default
+		Type stateType = spawneableState.getStateType();
+		Type spawneableType = typeof(ISpawneable<>).MakeGenericType(stateType);
+		var spawneable = coffeeInstance.GetComponent(spawneableType);
+		var defaultSpawn = spawneableType.GetMethod("SpawnDefault");
+		defaultSpawn.Invoke(spawneable, new object[]{SpawnInfo.AtPosition((Vector2Int) position.RoundToInt())});
 	}
 }
