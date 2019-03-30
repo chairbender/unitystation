@@ -6,19 +6,10 @@ using UnityEngine;
 /// Interface for a behavior that allows an object to be spawned (with default or user-defined initial state)
 /// and cloned in game. State is represented as a generic type so that
 /// </summary>
-///<typeparamref name="T">Type which encapsulates the state of the object.</typeparamref>
+///<typeparamref name="T">Type which encapsulates the state of the object. This object must have a no-arg
+/// public constructor and should set its initial state to the default values for this object (whatever makes sense).</typeparamref>
 public interface ISpawnable<T> : IHasSpawnableState
 {
-
-	/// <summary>
-	/// The object should be spawned in, initialized to a default state (it's up to the item what that is).
-	///
-	/// Prior to spawning, the object's transform and parent will already be set to the intended
-	/// destination. It's up to this method to do any additional work that's needed.
-	/// </summary>
-	/// <param name="spawnInfo">details about how the object was spawned</param>
-	void SpawnDefault(SpawnInfo spawnInfo);
-
 	/// <summary>
 	/// The object should be spawned in, initialized to the specified state.
 	///
