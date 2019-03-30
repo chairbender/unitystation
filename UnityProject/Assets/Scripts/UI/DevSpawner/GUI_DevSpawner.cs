@@ -9,23 +9,6 @@ using Object = UnityEngine.Object;
 /// </summary>
 public class GUI_DevSpawner : MonoBehaviour
 {
-	public static GUI_DevSpawner Instance;
-
-	void Awake()
-	{
-		if (Instance == null)
-		{
-			Instance = this;
-		}
-		//TODO: Not sure if this is needed, its used in GUI_IngameMenu
-		/*
-		else
-		{
-			Destroy(gameObject);
-		}
-		*/
-	}
-
 	public void Open()
 	{
 		SoundManager.Play("Click01");

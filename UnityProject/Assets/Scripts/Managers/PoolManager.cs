@@ -33,7 +33,9 @@ public class PoolManager : NetworkBehaviour
 	/// Spawn the item and ensures it is synced over the network
 	/// </summary>
 	/// <param name="prefab">Prefab to spawn an instance of. This is intended to be made to work for pretty much any prefab, but don't
-	/// be surprised if it doesn't as there are LOTS of prefabs in the game which all have unique behavior for how they should spawn.</param>
+	/// be surprised if it doesn't as there are LOTS of prefabs in the game which all have unique behavior for how they should spawn. If you are trying
+	/// to instantiate something and it isn't properly setting itself up, check to make sure each component that needs to set something up has
+	/// properly implemented a BeSpawned method.</param>
 	/// <param name="clone">GameObject which is also an instance of prefab. This will be broadcast to each component of
 	/// the newly-spawned object via BeSpawned(clone). It is up to each component to clone its state from this
 	/// gameobject. If you're trying to clone something and it isn't working, check that each component that needs to set
@@ -62,7 +64,7 @@ public class PoolManager : NetworkBehaviour
 
 
 		//broadcast BeSpawned so each component can set itself up
-		tempObject.BroadcastMessage("BeSpawned", clone);
+		tempObject.BroadcastMessage("BeSpawned", clone, SendMessageOptions.DontRequireReceiver);
 
 		return tempObject;
 	}
@@ -71,7 +73,9 @@ public class PoolManager : NetworkBehaviour
 	/// Spawn the item locally without syncing it over the network.
 	/// </summary>
 	/// <param name="prefab">Prefab to spawn an instance of. This is intended to be made to work for pretty much any prefab, but don't
-	/// be surprised if it doesn't as there are LOTS of prefabs in the game which all have unique behavior for how they should spawn.</param>
+	/// be surprised if it doesn't as there are LOTS of prefabs in the game which all have unique behavior for how they should spawn. If you are trying
+	/// to instantiate something and it isn't properly setting itself up, check to make sure each component that needs to set something up has
+	/// properly implemented a BeSpawned method.</param>
 	/// <param name="clone">GameObject which is also an instance of prefab. This will be broadcast to each component of
 	/// the newly-spawned object via BeSpawned(clone). It is up to each component to clone its state from this
 	/// gameobject. If you're trying to clone something and it isn't working, check that each component that needs to set

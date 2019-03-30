@@ -7,9 +7,11 @@ using UnityEngine;
 /// </summary>
 public class DevTabButtons : MonoBehaviour
 {
+	public GUI_DevSpawner devSpawner;
+
 	public void BtnSpawnItem()
 	{
-		//TODO: Pop up item spawner window
-		GUI_DevSpawner.Instance.Open();
+		devSpawner.gameObject.SetActive(true);
+		devSpawner.Open();
 	}
 }
