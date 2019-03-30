@@ -7,17 +7,23 @@ using UnityEngine;
 /// and cloned in game. State is represented as a generic type so that
 /// </summary>
 ///<typeparamref name="T">Type which encapsulates the state of the object.</typeparamref>
-public interface ISpawneable<T> : IHasSpawneableState
+public interface ISpawnable<T> : IHasSpawnableState
 {
 
 	/// <summary>
-	/// The object has been spawned in and should initialize itself to a default state.
+	/// The object should be spawned in, initialized to a default state (it's up to the item what that is).
+	///
+	/// Prior to spawning, the object's transform and parent will already be set to the intended
+	/// destination. It's up to this method to do any additional work that's needed.
 	/// </summary>
 	/// <param name="spawnInfo">details about how the object was spawned</param>
 	void SpawnDefault(SpawnInfo spawnInfo);
 
 	/// <summary>
-	/// The object has been spawned in and should initialize itself with the specified state.
+	/// The object should be spawned in, initialized to the specified state.
+	///
+	/// Prior to spawning, the object's transform and parent will already be set to the intended
+	/// destination. It's up to this method to do any additional work that's needed.
 	/// </summary>
 	/// <param name="spawnInfo">details about how the object was spawned</param>
 	/// <param name="initialState">initial state the object should use to set itself up</param>

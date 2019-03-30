@@ -7,7 +7,7 @@ using UnityEngine;
 /// Represents a behavior which has a type that provides a representation of its object's state for the purposes
 /// of spawning / cloning.
 /// </summary>
-public interface IHasSpawneableState
+public interface IHasSpawnableState
 {
 	/// <summary>
 	/// Provides

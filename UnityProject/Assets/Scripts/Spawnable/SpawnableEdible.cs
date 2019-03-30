@@ -6,10 +6,15 @@ using UnityEngine;
 /// <summary>
 /// Edible which can be spawned in either an eaten or uneaten state
 /// </summary>
-public class SpawneableEdible : MonoBehaviour, ISpawneable<bool>
+public class SpawnableEdible : MonoBehaviour, ISpawnable<bool>
 {
+	private CustomNetTransform cnt;
+	private void Awake()
+	{
+		cnt = GetComponent<CustomNetTransform>();
+	}
 
-    public Type getStateType()
+	public Type getStateType()
     {
 	    return typeof(bool);
     }
@@ -18,6 +23,8 @@ public class SpawneableEdible : MonoBehaviour, ISpawneable<bool>
     {
 	    //Can we get away with doing nothing?
 	    //Spawn uneaten.
+	    cnt.AppearAtPositionServer(spawnInfo.WorldPosition.To3Int());
+	    
     }
 
     public void SpawnWithState(SpawnInfo spawnInfo, bool initialState)

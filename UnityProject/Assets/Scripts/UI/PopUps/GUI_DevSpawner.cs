@@ -46,11 +46,11 @@ public class GUI_DevSpawner : MonoBehaviour
 		var coffeeprefab = Resources.Load("Coffee") as GameObject;
 		Vector3 position = PlayerManager.LocalPlayer.transform.position;
 		Transform parent = PlayerManager.LocalPlayer.transform.parent;
-		var coffeeInstance = Object.Instantiate(coffeeprefab, position, Quaternion.identity, parent);
-		var spawneableState = coffeeInstance.GetComponent<IHasSpawneableState>();
+		var coffeeInstance = PoolManager.Instance.PoolNetworkInstantiate(coffeeprefab, position, Quaternion.identity, parent);
+		var spawneableState = coffeeInstance.GetComponent<IHasSpawnableState>();
 		//instantiate the default
 		Type stateType = spawneableState.getStateType();
-		Type spawneableType = typeof(ISpawneable<>).MakeGenericType(stateType);
+		Type spawneableType = typeof(ISpawnable<>).MakeGenericType(stateType);
 		var spawneable = coffeeInstance.GetComponent(spawneableType);
 		var defaultSpawn = spawneableType.GetMethod("SpawnDefault");
 		defaultSpawn.Invoke(spawneable, new object[]{SpawnInfo.AtPosition((Vector2Int) position.RoundToInt())});
