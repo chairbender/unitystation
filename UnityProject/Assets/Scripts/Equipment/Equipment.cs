@@ -17,6 +17,7 @@ public class Equipment : NetworkBehaviour
 	private List<InventorySlot> playerInventory;
 	private InventorySlot suitStorageSlot;
 	private InventorySlot maskSlot;
+	private GameObject idPrefab;
 
 	public NetworkIdentity networkIdentity { get; set; }
 
@@ -28,6 +29,7 @@ public class Equipment : NetworkBehaviour
 		playerInventory = InventoryManager.AllClientInventorySlots;
 		suitStorageSlot = playerInventory.Find(s => s.SlotName == "suitStorage");
 		maskSlot = playerInventory.Find(s => s.SlotName == "mask");
+		idPrefab = Resources.Load<GameObject>("ID");
 	}
 
 	public override void OnStartServer()
@@ -238,20 +240,21 @@ public class Equipment : NetworkBehaviour
 
 	private void SpawnID(JobOutfit outFit)
 	{
-		GameObject idObj;
+
 		var realName = PlayerList.Instance.Get(gameObject).Name;
+		GameObject idObj = PoolManager.PoolNetworkInstantiate(idPrefab, parent: transform.parent);
 		if (outFit.jobType == JobType.CAPTAIN)
 		{
-			idObj = ItemFactory.Instance.SpawnIDCard(IDCardType.captain, outFit.jobType, outFit.allowedAccess, realName, transform.parent);
+			idObj.GetComponent<IDCard>().Initialize(IDCardType.captain, outFit.jobType, outFit.allowedAccess, realName);
 		}
 		else if (outFit.jobType == JobType.HOP || outFit.jobType == JobType.HOS || outFit.jobType == JobType.CMO || outFit.jobType == JobType.RD ||
 				 outFit.jobType == JobType.CHIEF_ENGINEER)
 		{
-			idObj = ItemFactory.Instance.SpawnIDCard(IDCardType.command, outFit.jobType, outFit.allowedAccess, realName, transform.parent);
+			idObj.GetComponent<IDCard>().Initialize(IDCardType.command, outFit.jobType, outFit.allowedAccess, realName);
 		}
 		else
 		{
-			idObj = ItemFactory.Instance.SpawnIDCard(IDCardType.standard, outFit.jobType, outFit.allowedAccess, realName, transform.parent);
+			idObj.GetComponent<IDCard>().Initialize(IDCardType.standard, outFit.jobType, outFit.allowedAccess, realName);
 		}
 
 		SetItem("id", idObj);
@@ -343,7 +346,7 @@ public class Equipment : NetworkBehaviour
 	}
 
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	/// <param name="slot"></param>
 	/// <returns>true iff the specified Epos has an associated player sprite.</returns>

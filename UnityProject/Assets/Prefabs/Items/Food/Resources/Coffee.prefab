@@ -17,7 +17,6 @@ GameObject:
   - component: {fileID: 114208883059431984}
   - component: {fileID: 114880268731048502}
   - component: {fileID: 6861194358892837349}
-  - component: {fileID: 4378188322605439444}
   - component: {fileID: 146561550947347302}
   m_Layer: 10
   m_Name: Coffee
@@ -217,18 +216,6 @@ MonoBehaviour:
   - coffee
   Amounts:
   - 50
---- !u!114 &4378188322605439444
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1110193000772614}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c354b79a5790dad44a9d03d0fbb991fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &146561550947347302
 MonoBehaviour:
   m_ObjectHideFlags: 0
