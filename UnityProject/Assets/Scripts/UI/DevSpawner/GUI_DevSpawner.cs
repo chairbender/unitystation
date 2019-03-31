@@ -21,26 +21,13 @@ public class GUI_DevSpawner : MonoBehaviour
 
 	// search index
 	private Lucene3D lucene;
-	//dict for looking up prefabs by instance ID (yes, there is no mechanism in Unity to do this already)
-	private Dictionary<int, GameObject> instanceIdToPrefab = new Dictionary<int, GameObject>();
+
 
     void Start()
     {
 	    ConfigureLucene();
 
-	    //Search through our resources and find each prefab that has a CNT component
-	    var spawnablePrefabs = Resources.FindObjectsOfTypeAll<GameObject>()
-		    .Where(IsPrefab)
-		    .OrderBy(go => go.name)
-		    //check if they have CNTs (thus are spawnable)
-		    .Where(go => go.GetComponent<CustomNetTransform>() != null);
-
-	    foreach (var spawnablePrefab in spawnablePrefabs)
-	    {
-		    instanceIdToPrefab.Add(spawnablePrefab.GetInstanceID(), spawnablePrefab);
-	    }
-
-	    StartCoroutine(lucene.IndexCoroutine(instanceIdToPrefab.Values.ToList().Select(DevSpawnerDocument.ForPrefab)));
+	    StartCoroutine(lucene.IndexCoroutine(PoolManager.SpawnablePrefabs.Select(DevSpawnerDocument.ForPrefab)));
     }
 
     private void OnLuceneProgress(object sender, LuceneProgressEventArgs e)
@@ -62,7 +49,7 @@ public class GUI_DevSpawner : MonoBehaviour
 	    //display new results
 	    foreach (var doc in docs)
 	    {
-		    GameObject prefab = instanceIdToPrefab[Convert.ToInt32(doc.Get("id"))];
+		    GameObject prefab = PoolManager.GetPrefabByName(doc.Get("name"));
 			CreateListItem(prefab);
 	    }
     }
@@ -72,11 +59,11 @@ public class GUI_DevSpawner : MonoBehaviour
 	    lucene = new Lucene3D();
 	    lucene.Progress += OnLuceneProgress;
 
-	    lucene.DefineIndexField<DevSpawnerDocument>("name", doc => doc.PrefabName, IndexOptions.IndexTerms);
-	    lucene.DefineIndexField<DevSpawnerDocument>("id", doc => doc.PrefabInstanceID.ToString(), IndexOptions.PrimaryKey);
+	    lucene.DefineIndexField<DevSpawnerDocument>("id", doc => doc.PrefabName, IndexOptions.PrimaryKey);
+	    lucene.DefineIndexField<DevSpawnerDocument>("name", doc => doc.PrefabName, IndexOptions.IndexTermsAndStore);
     }
 
-    private static bool IsPrefab(GameObject toCheck) => !toCheck.transform.gameObject.scene.IsValid();
+
 
     //add a list item to the content panel for spawning the specified prefab
     private void CreateListItem(GameObject forPrefab)

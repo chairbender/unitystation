@@ -12,16 +12,9 @@ public class DevSpawnerDocument
 	/// </summary>
 	public readonly string PrefabName;
 
-	/// <summary>
-	/// Instance ID of the prefab in our prefab map so we can retrieve it to spawn / render results.
-	/// </summary>
-	/// <returns></returns>
-	public readonly int PrefabInstanceID;
-
-	private DevSpawnerDocument(string prefabName, int prefabInstanceId)
+	private DevSpawnerDocument(string prefabName)
 	{
 		PrefabName = prefabName;
-		PrefabInstanceID = prefabInstanceId;
 	}
 
 	/// <summary>
@@ -30,6 +23,6 @@ public class DevSpawnerDocument
 	/// <param name="prefab"></param>
 	public static DevSpawnerDocument ForPrefab(GameObject prefab)
 	{
-		return new DevSpawnerDocument(prefab.name, prefab.GetInstanceID());
+		return new DevSpawnerDocument(prefab.name);
 	}
 }

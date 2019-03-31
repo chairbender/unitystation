@@ -28,8 +28,16 @@ public class DevSpawnerListItemController : MonoBehaviour
 
 	public void Spawn()
 	{
-		Vector3 position = PlayerManager.LocalPlayer.transform.position;
-		Transform parent = PlayerManager.LocalPlayer.transform.parent;
-		PoolManager.PoolNetworkInstantiate(prefab, position, parent);
+		if (CustomNetworkManager.IsServer)
+		{
+			Vector3 position = PlayerManager.LocalPlayer.transform.position;
+			Transform parent = PlayerManager.LocalPlayer.transform.parent;
+			PoolManager.PoolNetworkInstantiate(prefab, position, parent);
+		}
+		else
+		{
+			DevSpawnMessage.Send(prefab.name, PlayerManager.LocalPlayer.WorldPos());
+		}
+
 	}
 }
