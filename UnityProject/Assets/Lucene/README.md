@@ -92,6 +92,6 @@ The lucene-unity version modifies it to work with Unity through non-functional
 changes to the core code (to remove warnings), and to add a wrapper to make 
 consumption from Unity easier.
 
-Finally, for unitystation, we added / tweaked some capabilities of the lucene-unity wrapper to support
-additional options for searching / indexing we wanted for our project:
+Finally, for unitystation, we did the following:
  - Remove empty catch blocks so we can determine what errors are happening
+ - Provide the ability to delete the index

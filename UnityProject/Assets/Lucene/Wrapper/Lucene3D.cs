@@ -26,11 +26,16 @@ namespace Lucene.Unity {
         /// When running on iOS, this constructor must be called from the main thread.
         /// </summary>
         /// <param name="name">The name of the index directory, the default 'index' is recommended.</param>
-        public Lucene3D(string name = "index") {
+        public Lucene3D(string name = "index", bool deleteIfExists = false) {
             if(!ValidCrossPlatformName(name)) {
                 throw new ArgumentException($"In order to enable the best cross platform ability, names are limited to {validNamePattern}", nameof(name));
             }
             indexDirectory = new DirectoryInfo(Path.Combine(Application.persistentDataPath, name));
+            if (indexDirectory.Exists && deleteIfExists)
+            {
+	            indexDirectory.Delete(true);
+	            indexDirectory.Create();
+            }
         }
 
         /// <summary>
@@ -250,7 +255,6 @@ namespace Lucene.Unity {
                 }
             }
         }
-
     }
 
 }

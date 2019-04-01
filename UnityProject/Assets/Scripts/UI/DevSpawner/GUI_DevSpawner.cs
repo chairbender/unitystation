@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Lucene.Net.Documents;
 using Lucene.Unity;
 using UnityEngine;
 using UnityEngine.UI;
@@ -76,43 +77,30 @@ public class GUI_DevSpawner : MonoBehaviour
 	    //display new results
 	    foreach (var doc in docs)
 	    {
-		    if (doc.Get("type").Equals(DevSpawnerDocument.UNICLOTH_TYPE))
-		    {
-			    CreateListItem(doc.Get("name"));
-		    }
-		    else
-		    {
-			    GameObject prefab = PoolManager.GetPrefabByName(doc.Get("name"));
-			    CreateListItem(prefab);
-		    }
+		    CreateListItem(doc);
 	    }
     }
 
     private void ConfigureLucene()
     {
-	    lucene = new Lucene3D();
+	    //delete if exists
+	    lucene = new Lucene3D(deleteIfExists:true);
+
 	    lucene.Progress += OnLuceneProgress;
 
 	    lucene.DefineIndexField<DevSpawnerDocument>("id", doc => doc.Name, IndexOptions.PrimaryKey);
 	    lucene.DefineIndexField<DevSpawnerDocument>("name", doc => doc.Name, IndexOptions.IndexTermsAndStore);
+	    lucene.DefineIndexField<DevSpawnerDocument>("hier", doc => doc.Hier, IndexOptions.IndexTermsAndStore);
 	    lucene.DefineIndexField<DevSpawnerDocument>("type", doc => doc.Type, IndexOptions.IndexTermsAndStore);
     }
 
 
 
-    //add a list item to the content panel for spawning the specified prefab
-    private void CreateListItem(GameObject forPrefab)
+    //add a list item to the content panel for spawning the specified result
+    private void CreateListItem(Document doc)
     {
 	    GameObject listItem = Instantiate(listItemPrefab);
-	    listItem.GetComponent<DevSpawnerListItemController>().Initialize(forPrefab);
-	    listItem.transform.SetParent(contentPanel.transform);
-	    listItem.transform.localScale = Vector3.one;
-    }
-
-    private void CreateListItem(string forHier)
-    {
-	    GameObject listItem = Instantiate(listItemPrefab);
-	    listItem.GetComponent<DevSpawnerListItemController>().Initialize(forHier);
+	    listItem.GetComponent<DevSpawnerListItemController>().Initialize(doc);
 	    listItem.transform.SetParent(contentPanel.transform);
 	    listItem.transform.localScale = Vector3.one;
     }

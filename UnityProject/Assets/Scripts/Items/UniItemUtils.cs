@@ -74,6 +74,17 @@ public static class UniItemUtils
 	}
 
 	/// <summary>
+	/// Gets the entire set of attributes associated with this particular hier
+	/// </summary>
+	/// <param name="hier"></param>
+	/// <returns></returns>
+	public static Dictionary<string,string> GetObjectAttributes(string hier)
+	{
+		EnsureInit();
+		return dm.getObject(hier);
+	}
+
+	/// <summary>
 	/// Tries to get the inventory icon for the unicloth with the specified hier string
 	/// </summary>
 	/// <param name="hier">hier to get the icon for</param>

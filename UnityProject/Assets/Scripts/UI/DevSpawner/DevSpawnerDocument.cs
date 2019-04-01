@@ -13,21 +13,23 @@ public class DevSpawnerDocument
 	public static readonly string PREFAB_TYPE = "Prefab";
 
 	/// <summary>
-	/// If prefab, Name of the prefab (without .prefab). If unicloth, hier string.
+	/// Searchable name (if prefab, prefab name without .prefab. If unicloth, cloth name)
 	/// </summary>
 	public readonly string Name;
 	/// <summary>
+	/// If unicloth, hier of the cloth. Otherwise empty string
+	/// </summary>
+	public readonly string Hier;
+	/// <summary>
 	/// Type of this spawnable.
 	/// </summary>
-	public string Type => isUniCloth ? UNICLOTH_TYPE : PREFAB_TYPE;
+	public string Type => Hier.Length != 0 ? UNICLOTH_TYPE : PREFAB_TYPE;
 
-	private readonly bool isUniCloth;
-
-	private DevSpawnerDocument(string name, bool isUniCloth = false)
+	private DevSpawnerDocument(string name, string hier = "")
 	{
 
 		Name = name;
-		this.isUniCloth = isUniCloth;
+		Hier = hier;
 	}
 
 	/// <summary>
@@ -45,6 +47,15 @@ public class DevSpawnerDocument
 	/// <param name="prefab"></param>
 	public static DevSpawnerDocument ForUniCloth(string hier)
 	{
-		return new DevSpawnerDocument(hier, true);
+		//lookup display name from attributes
+		var attrs = UniItemUtils.GetObjectAttributes(hier);
+		attrs.TryGetValue("name", out var name);
+		if (name == null)
+		{
+			string[] nodes = hier.Split('/');
+			name = nodes[nodes.Length-1];
+		}
+
+		return new DevSpawnerDocument(name, hier);
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Lucene.Net.Documents;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,40 +14,31 @@ public class DevSpawnerListItemController : MonoBehaviour
 	private string hier;
 
 	/// <summary>
-	/// Initializes it to display an item for spawning a prefab
+	/// Initializes it to display the document
 	/// </summary>
-	/// <param name="forPrefab"></param>
-	public void Initialize(GameObject forPrefab)
+	/// <param name="resultDoc">document to display</param>
+	public void Initialize(Document resultDoc)
 	{
-		//use the first sprite we find on the prefab as the image
-		Sprite toUse = forPrefab.GetComponentInChildren<SpriteRenderer>()?.sprite;
-		if (toUse != null)
+		if (resultDoc.Get("type").Equals(DevSpawnerDocument.PREFAB_TYPE))
 		{
-			image.sprite = toUse;
+			prefab = PoolManager.GetPrefabByName(resultDoc.Get("name"));
+			Sprite toUse = prefab.GetComponentInChildren<SpriteRenderer>()?.sprite;
+			if (toUse != null)
+			{
+				image.sprite = toUse;
+			}
 		}
-
-		titleText.text = forPrefab.name;
-		detailText.text = "Prefab";
-		prefab = forPrefab;
-	}
-
-	/// <summary>
-	/// Initializes it to display an item for spawning a unicloth
-	/// </summary>
-	/// <param name="forhier">hier of the unicloth</param>
-	public void Initialize(string forhier)
-	{
-		//try to get the icon
-		Sprite toUse = UniItemUtils.GetInventoryIconSprite(forhier);
-		if (toUse != null)
+		else
 		{
-			image.sprite = toUse;
+			hier = resultDoc.Get("hier");
+			Sprite toUse = UniItemUtils.GetInventoryIconSprite(hier);
+			if (toUse != null)
+			{
+				image.sprite = toUse;
+			}
 		}
-
-		string[] nodes = forhier.Split('/');
-		titleText.text = nodes[nodes.Length-1];
-		detailText.text = forhier;
-		hier = forhier;
+		titleText.text = resultDoc.Get("name");
+		detailText.text = hier ?? "Prefab";
 	}
 
 	public void Spawn()
