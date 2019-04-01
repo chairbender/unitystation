@@ -205,10 +205,10 @@ public class Equipment : NetworkBehaviour
 
 		foreach (KeyValuePair<string, string> gearItem in gear)
 		{
-			if (gearItem.Value.Contains(ClothFactory.ClothingHierIdentifier) || gearItem.Value.Contains(ClothFactory.HeadsetHierIdentifier) ||
-			gearItem.Value.Contains(ClothFactory.BackPackHierIdentifier) || gearItem.Value.Contains(ClothFactory.BagHierIdentifier))
+			if (gearItem.Value.Contains(UniItemUtils.ClothingHierIdentifier) || gearItem.Value.Contains(UniItemUtils.HeadsetHierIdentifier) ||
+			gearItem.Value.Contains(UniItemUtils.BackPackHierIdentifier) || gearItem.Value.Contains(UniItemUtils.BagHierIdentifier))
 			{
-				GameObject obj = ClothFactory.Instance.CreateCloth(gearItem.Value, TransformState.HiddenPos, transform.parent);
+				GameObject obj = ClothFactory.CreateCloth(gearItem.Value, TransformState.HiddenPos, transform.parent);
 				//if ClothFactory does not return an object then move on to the next clothing item
 				if (!obj)
 				{

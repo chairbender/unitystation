@@ -66,7 +66,8 @@ public class PoolManager : NetworkBehaviour
 	/// <param name="position">world position to appear at. Defaults to HiddenPos (hidden / invisible)</param>
 	/// <param name="rotation">rotation to spawn with, defaults to Quaternion.identity</param>
 	/// <param name="parent">Parent to spawn under, defaults to no parent. THIS SHOULD RARELY BE NULL! Most things
-	/// should always be spawned under the Objects transform in their matrix.</param>
+	/// should always be spawned under the Objects transform in their matrix. However, many objects (due to RegisterTile)
+	/// usually take care of properly parenting themselves when spawned.</param>
 	/// <returns>the newly created GameObject</returns>
 	[Server]
 	public static GameObject PoolNetworkInstantiate(GameObject prefab, Vector3? position = null, Transform parent = null, Quaternion? rotation = null)

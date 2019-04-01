@@ -9,35 +9,49 @@ using UnityEngine.Networking;
 public class DevSpawnMessage : ClientMessage
 {
 	public static short MessageType = (short) MessageTypes.DevSpawnMessage;
-	// name of the prefab to spawn
-	public string PrefabName;
+	// name of the prefab or hier string to spawn
+	public string Name;
+	// true iff Name is a hier string for spawning a unicloth. False if Name is a prefab name.
+	public bool IsUniCloth;
 	// position to spawn at.
 	public Vector2 WorldPosition;
 
 	public override IEnumerator Process()
 	{
 		//TODO: Validate if player is allowed to spawn things. For now we will let anyone spawn.
-		PoolManager.PoolNetworkInstantiate(PrefabName, WorldPosition);
+
+		if (!IsUniCloth)
+		{
+
+			PoolManager.PoolNetworkInstantiate(Name, WorldPosition);
+		}
+		else
+		{
+			ClothFactory.CreateCloth(Name, WorldPosition);
+		}
+
 		yield return null;
 	}
 
 	public override string ToString()
 	{
-		return $"[DevSpawnMessage PrefabName={PrefabName} WorldPosition={WorldPosition}]";
+		return $"[DevSpawnMessage Name={Name} IsUniCloth={IsUniCloth} WorldPosition={WorldPosition}]";
 	}
 
 	/// <summary>
 	/// Ask the server to spawn a specific prefab
 	/// </summary>
-	/// <param name="prefabName">name of the prefab to instantiate (network synced)</param>
+	/// <param name="name">name of the prefab to instantiate, or the hier of the unicloth to instantiate (network synced)</param>
+	/// <param name="isUniCloth">true iff name is a hier (for a unicloth), false if name is a prefab</param>
 	/// <param name="worldPosition">world position to spawn it at</param>
 	/// <returns></returns>
-	public static void Send(string prefabName, Vector2 worldPosition)
+	public static void Send(string name, bool isUniCloth, Vector2 worldPosition)
 	{
 
 		DevSpawnMessage msg = new DevSpawnMessage
 		{
-			PrefabName = prefabName,
+			Name = name,
+			IsUniCloth =  isUniCloth,
 			WorldPosition = worldPosition
 		};
 		msg.Send();
@@ -46,14 +60,16 @@ public class DevSpawnMessage : ClientMessage
 	public override void Deserialize(NetworkReader reader)
 	{
 		base.Deserialize(reader);
-		PrefabName = reader.ReadString();
+		Name = reader.ReadString();
+		IsUniCloth = reader.ReadBoolean();
 		WorldPosition = reader.ReadVector2();
 	}
 
 	public override void Serialize(NetworkWriter writer)
 	{
 		base.Serialize(writer);
-		writer.Write(PrefabName);
+		writer.Write(Name);
+		writer.Write(IsUniCloth);
 		writer.Write(WorldPosition);
 	}
 }

@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 166.40002, y: -39.98003}
-  m_SizeDelta: {x: 215, y: 39.89}
+  m_AnchoredPosition: {x: 288.8, y: -66.1}
+  m_SizeDelta: {x: 376.43, y: 39.89}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6319473766453526712
 CanvasRenderer:
@@ -67,7 +67,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 10
+    m_FontSize: 16
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -114,8 +114,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 33, y: -27.17}
-  m_SizeDelta: {x: 48.119995, y: 53.449997}
+  m_AnchoredPosition: {x: 50.295, y: -51.234978}
+  m_SizeDelta: {x: 100.59, y: 106.06}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6218133214204492948
 CanvasRenderer:
@@ -245,8 +245,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -45, y: 30.77}
-  m_SizeDelta: {x: -904, y: -722.69}
+  m_AnchoredPosition: {x: -45, y: -19.31}
+  m_SizeDelta: {x: -904, y: -622.53}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &785717413582601608
 CanvasRenderer:
@@ -272,7 +272,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: -1
   m_PreferredWidth: -1
-  m_PreferredHeight: 58.309998
+  m_PreferredHeight: 102.46997
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -325,8 +325,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 166.4, y: -11.200001}
-  m_SizeDelta: {x: 215, y: 16.14}
+  m_AnchoredPosition: {x: 288.8, y: -34.365013}
+  m_SizeDelta: {x: 376.43, y: 23.58}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2463145647039679590
 CanvasRenderer:
@@ -358,7 +358,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1

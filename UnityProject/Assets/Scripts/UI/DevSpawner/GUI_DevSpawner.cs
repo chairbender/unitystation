@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Lucene.Unity;
 using UnityEngine;
@@ -27,7 +28,34 @@ public class GUI_DevSpawner : MonoBehaviour
     {
 	    ConfigureLucene();
 
-	    StartCoroutine(lucene.IndexCoroutine(PoolManager.SpawnablePrefabs.Select(DevSpawnerDocument.ForPrefab)));
+	    //get prefabs
+	    var toIndex = PoolManager.SpawnablePrefabs.Select(DevSpawnerDocument.ForPrefab).ToList();
+
+	    //get unicloths
+	    TextAsset asset = Resources.Load(Path.Combine("metadata", "hier"))as TextAsset;
+	    if (asset != null)
+	    {
+		    var unicloths =
+			    asset.text
+					.Split('\n')
+					//filter by things allowed to spawn
+					.Where(str => str.Contains(UniItemUtils.BagHierIdentifier) ||
+					              str.Contains(UniItemUtils.HeadsetHierIdentifier) ||
+					              str.Contains(UniItemUtils.ClothingHierIdentifier) ||
+					              str.Contains(UniItemUtils.BackPackHierIdentifier))
+					.Select(str => str.Trim())
+					.Select(DevSpawnerDocument.ForUniCloth)
+					.ToList();
+		    toIndex.AddRange(unicloths);
+	    }
+	    else
+	    {
+		    Logger.LogError("Unable to load unicloths from metadata/hier directory. They will be unavailable" +
+		                    " in the dev spawner.");
+	    }
+
+	    //start indexing
+	    StartCoroutine(lucene.IndexCoroutine(toIndex));
     }
 
     private void OnLuceneProgress(object sender, LuceneProgressEventArgs e)
@@ -37,11 +65,10 @@ public class GUI_DevSpawner : MonoBehaviour
 
     public void Search()
     {
-	    //TODO: re-use objects
 	    //delete previous results
 	    foreach (Transform child in contentPanel.transform)
 	    {
-		    GameObject.Destroy(child.gameObject);
+		    Destroy(child.gameObject);
 	    }
 
 	    var docs = lucene.Search(searchBox.text);
@@ -49,8 +76,15 @@ public class GUI_DevSpawner : MonoBehaviour
 	    //display new results
 	    foreach (var doc in docs)
 	    {
-		    GameObject prefab = PoolManager.GetPrefabByName(doc.Get("name"));
-			CreateListItem(prefab);
+		    if (doc.Get("type").Equals(DevSpawnerDocument.UNICLOTH_TYPE))
+		    {
+			    CreateListItem(doc.Get("name"));
+		    }
+		    else
+		    {
+			    GameObject prefab = PoolManager.GetPrefabByName(doc.Get("name"));
+			    CreateListItem(prefab);
+		    }
 	    }
     }
 
@@ -59,8 +93,9 @@ public class GUI_DevSpawner : MonoBehaviour
 	    lucene = new Lucene3D();
 	    lucene.Progress += OnLuceneProgress;
 
-	    lucene.DefineIndexField<DevSpawnerDocument>("id", doc => doc.PrefabName, IndexOptions.PrimaryKey);
-	    lucene.DefineIndexField<DevSpawnerDocument>("name", doc => doc.PrefabName, IndexOptions.IndexTermsAndStore);
+	    lucene.DefineIndexField<DevSpawnerDocument>("id", doc => doc.Name, IndexOptions.PrimaryKey);
+	    lucene.DefineIndexField<DevSpawnerDocument>("name", doc => doc.Name, IndexOptions.IndexTermsAndStore);
+	    lucene.DefineIndexField<DevSpawnerDocument>("type", doc => doc.Type, IndexOptions.IndexTermsAndStore);
     }
 
 
@@ -70,6 +105,14 @@ public class GUI_DevSpawner : MonoBehaviour
     {
 	    GameObject listItem = Instantiate(listItemPrefab);
 	    listItem.GetComponent<DevSpawnerListItemController>().Initialize(forPrefab);
+	    listItem.transform.SetParent(contentPanel.transform);
+	    listItem.transform.localScale = Vector3.one;
+    }
+
+    private void CreateListItem(string forHier)
+    {
+	    GameObject listItem = Instantiate(listItemPrefab);
+	    listItem.GetComponent<DevSpawnerListItemController>().Initialize(forHier);
 	    listItem.transform.SetParent(contentPanel.transform);
 	    listItem.transform.localScale = Vector3.one;
     }
