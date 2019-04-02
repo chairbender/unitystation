@@ -85,7 +85,7 @@ public class ClothFactory : NetworkBehaviour
 		}
 
 		//PoolManager handles networkspawn
-		GameObject uniItem = pickClothObject(hierString);
+		GameObject uniItem = GetClothPrefabForHier(hierString);
 		GameObject clothObj = PoolManager.PoolNetworkInstantiate(uniItem, worldPos, parent: parent);
 		ItemAttributes i = clothObj.GetComponent<ItemAttributes>();
 		i.hierarchy = hierString;
@@ -97,7 +97,12 @@ public class ClothFactory : NetworkBehaviour
 		return clothObj;
 	}
 
-	private static GameObject pickClothObject(string hierarchy)
+	/// <summary>
+	/// Returns the cloth prefab that should be used for spawning the object with the specified hier
+	/// </summary>
+	/// <param name="hierarchy"></param>
+	/// <returns></returns>
+	public static GameObject GetClothPrefabForHier(string hierarchy)
 	{
 		if (hierarchy.Contains(UniItemUtils.ClothingHierIdentifier))
 		{

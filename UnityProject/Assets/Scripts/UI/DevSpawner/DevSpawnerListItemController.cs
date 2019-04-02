@@ -27,6 +27,8 @@ public class DevSpawnerListItemController : MonoBehaviour
 			{
 				image.sprite = toUse;
 			}
+
+			detailText.text = "Prefab";
 		}
 		else
 		{
@@ -36,9 +38,12 @@ public class DevSpawnerListItemController : MonoBehaviour
 			{
 				image.sprite = toUse;
 			}
+			//determine which prefab this is for
+			GameObject prefab = ClothFactory.GetClothPrefabForHier(hier);
+			detailText.text = $"{prefab.name}\n{hier}";
 		}
 		titleText.text = resultDoc.Get("name");
-		detailText.text = hier ?? "Prefab";
+
 	}
 
 	public void Spawn()
