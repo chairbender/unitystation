@@ -24,6 +24,8 @@ public class GUI_DevSpawner : MonoBehaviour
 	// search index
 	private Lucene3D lucene;
 
+	private bool isFocused;
+
 
     void Start()
     {
@@ -57,6 +59,35 @@ public class GUI_DevSpawner : MonoBehaviour
 
 	    //start indexing
 	    StartCoroutine(lucene.IndexCoroutine(toIndex));
+    }
+
+    /// <summary>
+    /// There is no event for focusing input, so we must check for it manually in Update
+    /// </summary>
+    void Update()
+    {
+	    if (searchBox.isFocused && !isFocused)
+	    {
+		    InputFocus();
+	    }
+	    else if (!searchBox.isFocused && isFocused)
+	    {
+		    InputUnfocus();
+	    }
+    }
+
+    private void InputFocus()
+    {
+	    //disable keyboard commands while input is focused
+	    isFocused = true;
+	    UIManager.IsInputFocus = true;
+    }
+
+    private void InputUnfocus()
+    {
+	    //disable keyboard commands while input is focused
+	    isFocused = false;
+	    UIManager.IsInputFocus = false;
     }
 
     private void OnLuceneProgress(object sender, LuceneProgressEventArgs e)
