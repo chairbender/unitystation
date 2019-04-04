@@ -18,16 +18,20 @@ public class DevSpawnMessage : ClientMessage
 
 	public override IEnumerator Process()
 	{
-		//TODO: Validate if player is allowed to spawn things. For now we will let anyone spawn.
+		//TODO: Validate if player is allowed to spawn things, check if they have admin privs.
+		//For now we will let anyone spawn.
 
-		if (!IsUniCloth)
+		if (MatrixManager.IsPassableAt(WorldPosition.RoundToInt()))
 		{
+			if (!IsUniCloth)
+			{
 
-			PoolManager.PoolNetworkInstantiate(Name, WorldPosition);
-		}
-		else
-		{
-			ClothFactory.CreateCloth(Name, WorldPosition);
+				PoolManager.PoolNetworkInstantiate(Name, WorldPosition);
+			}
+			else
+			{
+				ClothFactory.CreateCloth(Name, WorldPosition);
+			}
 		}
 
 		yield return null;

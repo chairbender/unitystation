@@ -3,15 +3,40 @@ using System.Collections.Generic;
 using Lucene.Net.Documents;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Experimental.UIElements;
 using UnityEngine.UI;
+using Button = UnityEngine.UI.Button;
+using Image = UnityEngine.UI.Image;
 
+[RequireComponent(typeof(EscapeKeyTarget))]
 public class DevSpawnerListItemController : MonoBehaviour
 {
 	public Image image;
 	public Text titleText;
 	public Text detailText;
+	public GameObject drawingMessage;
+
+	// holds which item is currently selected, shared between instances of this component.
+	private static DevSpawnerListItemController selectedItem;
+
+	//prefab to use for our cursor when painting
+	public GameObject cursorPrefab;
+	// prefab to spawn
 	private GameObject prefab;
 	private string hier;
+
+	// sprite under cursor for showing what will be spawned
+	private GameObject cursorObject;
+
+	// so we can escape while drawing - enabled while drawing, disabled when done
+	private EscapeKeyTarget escapeKeyTarget;
+
+	private void Start()
+	{
+		escapeKeyTarget = GetComponent<EscapeKeyTarget>();
+	}
+
 
 	/// <summary>
 	/// Initializes it to display the document
@@ -43,37 +68,98 @@ public class DevSpawnerListItemController : MonoBehaviour
 			detailText.text = $"{prefab.name}\n{hier}";
 		}
 		titleText.text = resultDoc.Get("name");
-
 	}
 
-	public void Spawn()
+	private void Update()
 	{
-		if (CustomNetworkManager.IsServer)
+		if (selectedItem == this)
 		{
-			Vector3 position = PlayerManager.LocalPlayer.transform.position;
-			Transform parent = PlayerManager.LocalPlayer.transform.parent;
-			if (hier != null)
+			cursorObject.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			if (Input.GetMouseButtonDown(0))
 			{
-				ClothFactory.CreateCloth(hier, position, parent);
+				//Ignore spawn if pointer is hovering over GUI
+				if (EventSystem.current.IsPointerOverGameObject())
+				{
+					return;
+				}
+				TrySpawn();
+			}
+		}
+	}
+
+	private void OnDisable()
+	{
+		OnEscape();
+	}
+
+	public void OnEscape()
+	{
+		if (selectedItem == this)
+		{
+			//stop drawing
+			Destroy(cursorObject);
+			UIManager.IsMouseInteractionDisabled = false;
+			escapeKeyTarget.enabled = false;
+			selectedItem = null;
+			drawingMessage.SetActive(false);
+		}
+	}
+
+
+
+	public void OnSelected()
+	{
+		if (selectedItem != this)
+		{
+			if (selectedItem != null)
+			{
+				//tell the other selected one that it's time to stop
+				selectedItem.OnEscape();
+			}
+			//just chosen to be spawned on the map. Put our object under the mouse cursor
+			cursorObject = Instantiate(cursorPrefab, transform.root);
+			cursorObject.GetComponent<SpriteRenderer>().sprite = image.sprite;
+			UIManager.IsMouseInteractionDisabled = true;
+			escapeKeyTarget.enabled = true;
+			selectedItem = this;
+			drawingMessage.SetActive(true);
+		}
+	}
+
+	/// <summary>
+	/// Tries to spawn at the specified position, does not spawn if position is not valid (impassable)
+	/// </summary>
+	private void TrySpawn()
+	{
+		Vector3Int position = cursorObject.transform.position.RoundToInt();
+		position.z = 0;
+		if (MatrixManager.IsPassableAt(position))
+		{
+			if (CustomNetworkManager.IsServer)
+			{
+				Transform parent = PlayerManager.LocalPlayer.transform.parent;
+				if (hier != null)
+				{
+					ClothFactory.CreateCloth(hier, position, parent);
+				}
+				else
+				{
+					PoolManager.PoolNetworkInstantiate(prefab, position, parent);
+				}
+
 			}
 			else
 			{
-				PoolManager.PoolNetworkInstantiate(prefab, position, parent);
-			}
+				if (hier != null)
+				{
+					DevSpawnMessage.Send(hier, true, (Vector3) position);
+				}
+				else
+				{
+					DevSpawnMessage.Send(prefab.name, false, (Vector3) position);
+				}
 
+			}
 		}
-		else
-		{
-			if (hier != null)
-			{
-				DevSpawnMessage.Send(hier, true, PlayerManager.LocalPlayer.WorldPos());
-			}
-			else
-			{
-				DevSpawnMessage.Send(prefab.name, false, PlayerManager.LocalPlayer.WorldPos());
-			}
-
-		}
-
 	}
 }
