@@ -65,9 +65,9 @@ public class PoolManager : NetworkBehaviour
 	/// properly implemented a BeSpawned method.</param>
 	/// <param name="position">world position to appear at. Defaults to HiddenPos (hidden / invisible)</param>
 	/// <param name="rotation">rotation to spawn with, defaults to Quaternion.identity</param>
-	/// <param name="parent">Parent to spawn under, defaults to no parent. THIS SHOULD RARELY BE NULL! Most things
-	/// should always be spawned under the Objects transform in their matrix. However, many objects (due to RegisterTile)
-	/// usually take care of properly parenting themselves when spawned.</param>
+	/// <param name="parent">Parent to spawn under, defaults to no parent. Most things
+	/// should always be spawned under the Objects transform in their matrix. Many objects (due to RegisterTile)
+	/// usually take care of properly parenting themselves when spawned so in many cases you can leave it null.</param>
 	/// <returns>the newly created GameObject</returns>
 	[Server]
 	public static GameObject PoolNetworkInstantiate(GameObject prefab, Vector3? position = null, Transform parent = null, Quaternion? rotation = null)
@@ -94,6 +94,40 @@ public class PoolManager : NetworkBehaviour
 	}
 
 	/// <summary>
+	/// Clone the item and ensures it is synced over the network. Note that this is not using the pool because we need
+	/// to use Object.Instantiate to clone the actual gameobject and can't just take the object from the pool because
+	/// we don't know its prefab and wouldn't be able to clone it anyway using a prefab.
+	/// </summary>
+	/// <param name="toClone">GameObject to clone, intended to work for any object, but don't
+	/// be surprised if it doesn't as there are LOTS of prefabs in the game which might need unique behavior for how they should spawn. If you are trying
+	/// to clone something and it isn't properly setting itself up, check to make sure each component that needs to set something up has
+	/// properly implemented a BeCloned method.</param>
+	/// <param name="position">world position to appear at. Defaults to HiddenPos (hidden / invisible)</param>
+	/// <param name="rotation">rotation to spawn with, defaults to Quaternion.identity</param>
+	/// <param name="parent">Parent to spawn under, defaults to no parent. Most things
+	/// should always be spawned under the Objects transform in their matrix. Many objects (due to RegisterTile)
+	/// usually take care of properly parenting themselves when spawned so in many cases you can leave it null.</param>
+	/// <returns>the newly created GameObject</returns>
+	[Server]
+	public static GameObject NetworkClone(GameObject toClone, Vector3? position = null, Transform parent = null, Quaternion? rotation = null)
+	{
+		if (!IsInstanceInit())
+		{
+			return null;
+		}
+
+		GameObject tempObject = Instance.Clone(toClone, position ?? TransformState.HiddenPos, rotation ?? Quaternion.identity, parent);
+
+		NetworkServer.Spawn(tempObject);
+		tempObject.GetComponent<CustomNetTransform>()?.NotifyPlayers();//Sending clientState for newly spawned items
+
+		//broadcast BeCloned so each component can do what it wants
+		tempObject.BroadcastMessage("BeCloned", toClone, SendMessageOptions.DontRequireReceiver);
+
+		return tempObject;
+	}
+
+	/// <summary>
 	/// Spawn the item and ensures it is synced over the network
 	/// </summary>
 	/// <param name="prefabName">Name of the prefab to spawn an instance of. This is intended to be made to work for pretty much any prefab, but don't
@@ -102,9 +136,9 @@ public class PoolManager : NetworkBehaviour
 	/// properly implemented a BeSpawned method.</param>
 	/// <param name="position">world position to appear at. Defaults to HiddenPos (hidden / invisible)</param>
 	/// <param name="rotation">rotation to spawn with, defaults to Quaternion.identity</param>
-	/// <param name="parent">Parent to spawn under, defaults to no parent. THIS SHOULD RARELY BE NULL! Most things
-	/// should always be spawned under the Objects transform in their matrix. However, many objects (due to RegisterTile)
-	/// usually take care of properly parenting themselves when spawned.</param>
+	/// <param name="parent">Parent to spawn under, defaults to no parent. Most things
+	/// should always be spawned under the Objects transform in their matrix. Many objects (due to RegisterTile)
+	/// usually take care of properly parenting themselves when spawned so in many cases you can leave it null.</param>
 	/// <returns>the newly created GameObject</returns>
 	[Server]
 	public static GameObject PoolNetworkInstantiate(String prefabName, Vector3? position = null, Transform parent = null, Quaternion? rotation = null)
@@ -129,8 +163,9 @@ public class PoolManager : NetworkBehaviour
 	/// properly implemented a BeSpawned method.</param>
 	/// <param name="position">world position to appear at. Defaults to HiddenPos (hidden / invisible)</param>
 	/// <param name="rotation">rotation to spawn with, defaults to Quaternion.identity</param>
-	/// <param name="parent">Parent to spawn under, defaults to no parent. THIS SHOULD RARELY BE NULL! Most things
-	/// should always be spawned under the Objects transform in their matrix.</param>
+	/// <param name="parent">Parent to spawn under, defaults to no parent. Most things
+	/// should always be spawned under the Objects transform in their matrix. Many objects (due to RegisterTile)
+	/// usually take care of properly parenting themselves when spawned so in many cases you can leave it null.</param>
 	/// <returns>the newly created GameObject</returns>
 	public static GameObject PoolClientInstantiate(GameObject prefab, Vector3? position = null, Transform parent = null, Quaternion? rotation = null)
 	{
@@ -185,6 +220,20 @@ public class PoolManager : NetworkBehaviour
 
 			pooledInstance = false;
 		}
+
+		return tempObject;
+
+	}
+
+	private GameObject Clone(GameObject toClone, Vector3 position, Quaternion rotation, Transform parent)
+	{
+		GameObject tempObject = null;
+		bool hide = position == TransformState.HiddenPos;
+		//Cut off Z-axis
+		Vector3 cleanPos = ( Vector2 ) position;
+		Vector3 pos = hide ? TransformState.HiddenPos : cleanPos;
+		tempObject = Instantiate(toClone, pos, rotation, parent);
+		tempObject.GetComponent<CustomNetTransform>()?.ReInitServerState();
 
 		return tempObject;
 

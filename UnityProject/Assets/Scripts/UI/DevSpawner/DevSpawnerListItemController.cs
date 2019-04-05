@@ -74,8 +74,8 @@ public class DevSpawnerListItemController : MonoBehaviour
 	{
 		if (selectedItem == this)
 		{
-			cursorObject.transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			if (Input.GetMouseButtonDown(0))
+			cursorObject.transform.position = Camera.main.ScreenToWorldPoint(CommonInput.mousePosition);
+			if (CommonInput.GetMouseButtonDown(0))
 			{
 				//Ignore spawn if pointer is hovering over GUI
 				if (EventSystem.current.IsPointerOverGameObject())
@@ -137,14 +137,13 @@ public class DevSpawnerListItemController : MonoBehaviour
 		{
 			if (CustomNetworkManager.IsServer)
 			{
-				Transform parent = PlayerManager.LocalPlayer.transform.parent;
 				if (hier != null)
 				{
-					ClothFactory.CreateCloth(hier, position, parent);
+					ClothFactory.CreateCloth(hier, position);
 				}
 				else
 				{
-					PoolManager.PoolNetworkInstantiate(prefab, position, parent);
+					PoolManager.PoolNetworkInstantiate(prefab, position);
 				}
 
 			}
