@@ -1,11 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Networking;
+using Object = System.Object;
 
 /// <summary>
-/// Provides the general-purpose ability to create instances of prefabs, network synced, while using object pooling.
+/// Provides the general-purpose ability to create / destroy / colone objects and instances of prefabs, network synced, while using object pooling
+/// for some kinds of objects. Even if the object is not pooled, this should still be used to spawn / despawn / clone it.
+///
+/// Notes on Spawn / Clone Hooks:
+/// When an object is spawned in game, each component is broadcast OnSpawnedServer on the server and then OnSpawnedClient on the
+/// client. This allows the component to set itself up after being spawned in a good "default" state that "just works".
+/// What that entails is up to the object / component.
+///
+/// When an object is cloned in game, each component is broadcast OnClonedServer on the server and then OnClonedClient on
+/// the client. This method also includes the game object that was cloned. This allows the component to
+/// inspect the cloned object and change its own state to match the object. It's up to each component / object to
+/// decide how to do this.
+///
+/// Neither of these will be called when spawning only a client-side object (via PoolClientInstantiate).
 /// </summary>
 public class PoolManager : NetworkBehaviour
 {
@@ -62,7 +77,7 @@ public class PoolManager : NetworkBehaviour
 	/// <param name="prefab">Prefab to spawn an instance of. This is intended to be made to work for pretty much any prefab, but don't
 	/// be surprised if it doesn't as there are LOTS of prefabs in the game which all have unique behavior for how they should spawn. If you are trying
 	/// to instantiate something and it isn't properly setting itself up, check to make sure each component that needs to set something up has
-	/// properly implemented a BeSpawned method.</param>
+	/// properly implemented a OnSpawnedServer and OnSpawnedClient method.</param>
 	/// <param name="position">world position to appear at. Defaults to HiddenPos (hidden / invisible)</param>
 	/// <param name="rotation">rotation to spawn with, defaults to Quaternion.identity</param>
 	/// <param name="parent">Parent to spawn under, defaults to no parent. Most things
@@ -86,22 +101,21 @@ public class PoolManager : NetworkBehaviour
 			tempObject.GetComponent<CustomNetTransform>()?.NotifyPlayers();//Sending clientState for newly spawned items
 		}
 
-
-		//broadcast BeSpawned so each component can set itself up
-		tempObject.BroadcastMessage("BeSpawned", SendMessageOptions.DontRequireReceiver);
+		//fire the hooks for spawning
+		tempObject.GetComponent<CustomNetTransform>()?.FireSpawnHooks();
 
 		return tempObject;
 	}
 
 	/// <summary>
-	/// Clone the item and ensures it is synced over the network. Note that this is not using the pool because we need
-	/// to use Object.Instantiate to clone the actual gameobject and can't just take the object from the pool because
-	/// we don't know its prefab and wouldn't be able to clone it anyway using a prefab.
+	/// Clone the item and ensures it is synced over the network. This only works if toClone has a PoolPrefabTracker
+	/// attached or its name matches a prefab name, otherwise we don't know what prefab to create.
 	/// </summary>
-	/// <param name="toClone">GameObject to clone, intended to work for any object, but don't
+	/// <param name="toClone">GameObject to clone. This only works if toClone has a PoolPrefabTracker
+	/// attached or its name matches a prefab name, otherwise we don't know what prefab to create.. Intended to work for any object, but don't
 	/// be surprised if it doesn't as there are LOTS of prefabs in the game which might need unique behavior for how they should spawn. If you are trying
 	/// to clone something and it isn't properly setting itself up, check to make sure each component that needs to set something up has
-	/// properly implemented a BeCloned method.</param>
+	/// properly implemented a OnClonedServer and OnClonedClient method.</param>
 	/// <param name="position">world position to appear at. Defaults to HiddenPos (hidden / invisible)</param>
 	/// <param name="rotation">rotation to spawn with, defaults to Quaternion.identity</param>
 	/// <param name="parent">Parent to spawn under, defaults to no parent. Most things
@@ -116,13 +130,25 @@ public class PoolManager : NetworkBehaviour
 			return null;
 		}
 
-		GameObject tempObject = Instance.Clone(toClone, position ?? TransformState.HiddenPos, rotation ?? Quaternion.identity, parent);
+		var prefab = DeterminePrefab(toClone);
+		if (prefab == null)
+		{
+			Logger.LogErrorFormat("Object {0} at {1} cannot be cloned because it has no PoolPrefabTracker and its name" +
+			                      " does not match a prefab name, so we cannot" +
+			                      " determine the prefab to instantiate. Please fix this object so that it" +
+			                      " has an attached PoolPrefabTracker or so its name matches the prefab it was created from.", Category.ItemSpawn, toClone.name, position);
+		}
 
-		NetworkServer.Spawn(tempObject);
-		tempObject.GetComponent<CustomNetTransform>()?.NotifyPlayers();//Sending clientState for newly spawned items
+		GameObject tempObject = Instance.PoolInstantiate(prefab, position ?? TransformState.HiddenPos, rotation ?? Quaternion.identity, parent, out var isPooled);
 
-		//broadcast BeCloned so each component can do what it wants
-		tempObject.BroadcastMessage("BeCloned", toClone, SendMessageOptions.DontRequireReceiver);
+		if (!isPooled)
+		{
+			NetworkServer.Spawn(tempObject);
+			tempObject.GetComponent<CustomNetTransform>()?.NotifyPlayers();//Sending clientState for newly spawned items
+		}
+
+		//fire the hooks for cloning
+		tempObject.GetComponent<CustomNetTransform>()?.FireCloneHooks(toClone);
 
 		return tempObject;
 	}
@@ -133,7 +159,7 @@ public class PoolManager : NetworkBehaviour
 	/// <param name="prefabName">Name of the prefab to spawn an instance of. This is intended to be made to work for pretty much any prefab, but don't
 	/// be surprised if it doesn't as there are LOTS of prefabs in the game which all have unique behavior for how they should spawn. If you are trying
 	/// to instantiate something and it isn't properly setting itself up, check to make sure each component that needs to set something up has
-	/// properly implemented a BeSpawned method.</param>
+	/// properly implemented a OnSpawnedServer and OnSpawnedClient method.</param>
 	/// <param name="position">world position to appear at. Defaults to HiddenPos (hidden / invisible)</param>
 	/// <param name="rotation">rotation to spawn with, defaults to Quaternion.identity</param>
 	/// <param name="parent">Parent to spawn under, defaults to no parent. Most things
@@ -155,12 +181,10 @@ public class PoolManager : NetworkBehaviour
 	}
 
 	/// <summary>
-	/// Spawn the item locally without syncing it over the network.
+	/// Spawn the item locally without syncing it over the network. OnSpawnedServer and OnSpawnedClient hooks will
+	/// not be called as this is only used for client side things.
 	/// </summary>
-	/// <param name="prefab">Prefab to spawn an instance of. This is intended to be made to work for pretty much any prefab, but don't
-	/// be surprised if it doesn't as there are LOTS of prefabs in the game which all have unique behavior for how they should spawn. If you are trying
-	/// to instantiate something and it isn't properly setting itself up, check to make sure each component that needs to set something up has
-	/// properly implemented a BeSpawned method.</param>
+	/// <param name="prefab">Prefab to spawn an instance of. </param>
 	/// <param name="position">world position to appear at. Defaults to HiddenPos (hidden / invisible)</param>
 	/// <param name="rotation">rotation to spawn with, defaults to Quaternion.identity</param>
 	/// <param name="parent">Parent to spawn under, defaults to no parent. Most things
@@ -233,6 +257,7 @@ public class PoolManager : NetworkBehaviour
 		Vector3 cleanPos = ( Vector2 ) position;
 		Vector3 pos = hide ? TransformState.HiddenPos : cleanPos;
 		tempObject = Instantiate(toClone, pos, rotation, parent);
+		NetworkServer.Spawn(tempObject);
 		tempObject.GetComponent<CustomNetTransform>()?.ReInitServerState();
 
 		return tempObject;
@@ -251,7 +276,7 @@ public class PoolManager : NetworkBehaviour
 			//TODO: What's the proper way to prevent this?
 			Logger.LogError("PoolManager was attempted to be used before it has initialized. Please delay using" +
 			                " PoolManager (such as by using a coroutine to wait) until it is initialized. Nothing will" +
-			                " be initialized and null will be returned.");
+			                " be done and null will be returned.");
 			return false;
 		}
 
@@ -306,6 +331,8 @@ public class PoolManager : NetworkBehaviour
 
 	/// <summary>
 	///     For items that are network synced only!
+	/// 	If target has no ObjectBehavior or is not pooled, it will simply be deleted and the deletion
+	/// 	will be synced to each client.
 	/// </summary>
 	[Server]
 	public static void PoolNetworkDestroy(GameObject target)
@@ -314,8 +341,22 @@ public class PoolManager : NetworkBehaviour
 		{
 			return;
 		}
-		Instance.AddToPool(target);
-		target.GetComponent<ObjectBehaviour>().visibleState = false;
+
+		//even if it has a pool prefab tracker, will still destroy it if it has no object behavior
+		var poolPrefabTracker = target.GetComponent<PoolPrefabTracker>();
+		var objBehavior = target.GetComponent<ObjectBehaviour>();
+		if (poolPrefabTracker != null && objBehavior != null)
+		{
+			//pooled
+			Instance.AddToPool(target);
+			objBehavior.visibleState = false;
+		}
+		else
+		{
+			//not pooled
+			NetworkServer.Destroy(target);
+		}
+
 	}
 
 	/// <summary>
@@ -391,6 +432,27 @@ public class PoolManager : NetworkBehaviour
 			return;
 		}
 		Instance.pools.Clear();
+	}
+
+	/// <summary>
+	/// Tries to determine the prefab that was used to create the specified object.
+	/// If there is an attached PoolPrefabTracker, uses that. Otherwise, uses the name
+	/// and removes parentheses  like (Clone) or (1) to look up the prefab name in our map.
+	/// </summary>
+	/// <param name="instance">object whose prefab should be determined.</param>
+	/// <returns>the prefab, otherwise null if it could not be determined.</returns>
+	public static GameObject DeterminePrefab(GameObject instance)
+	{
+		var tracker = instance.GetComponent<PoolPrefabTracker>();
+		if (tracker != null)
+		{
+			return tracker.myPrefab;
+		}
+
+		//regex below strips out parentheses and things between them
+		var prefabName = Regex.Replace(instance.name, @"\(.*\)", "").Trim();
+
+		return Instance.nameToSpawnablePrefab.ContainsKey(prefabName) ? GetPrefabByName(prefabName) : null;
 	}
 
 	/// <summary>

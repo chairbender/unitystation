@@ -8,8 +8,8 @@ using UnityEngine.Networking;
 /// </summary>
 public class DevCloneMessage : ClientMessage
 {
-	public static short MessageType = (short) MessageTypes.DevSpawnMessage;
-	// Net ID of the object to clone
+	public static short MessageType = (short) MessageTypes.DevCloneMessage;
+	// Net ID of the object to destroy
 	public NetworkInstanceId ToClone;
 	// position to spawn at.
 	public Vector2 WorldPosition;

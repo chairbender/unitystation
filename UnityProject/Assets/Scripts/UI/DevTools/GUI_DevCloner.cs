@@ -5,6 +5,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/// <summary>
+/// Main logic for the UI for cloning objects
+/// </summary>
 public class GUI_DevCloner : MonoBehaviour
 {
 
@@ -33,12 +36,16 @@ public class GUI_DevCloner : MonoBehaviour
 	// so we can escape while drawing - enabled while drawing, disabled when done
 	private EscapeKeyTarget escapeKeyTarget;
 
+	private LightingSystem lightingSystem;
+
 	void Awake()
 	{
-		ToState(State.SELECTING);
+
 		layerMask = LayerMask.GetMask("Furniture", "Machines", "Items",
 			"Objects");
 		escapeKeyTarget = GetComponent<EscapeKeyTarget>();
+		lightingSystem = Camera.main.GetComponent<LightingSystem>();
+		ToState(State.SELECTING);
 	}
 
 	private void ToState(State newState)
@@ -57,6 +64,7 @@ public class GUI_DevCloner : MonoBehaviour
 		{
 			statusText.text = "Click to select object to clone (ESC to Cancel)";
 			UIManager.IsMouseInteractionDisabled = true;
+			lightingSystem.enabled = false;
 
 		}
 		else if (newState == State.DRAWING)
@@ -66,11 +74,13 @@ public class GUI_DevCloner : MonoBehaviour
 			//just chosen to be spawned on the map. Put our object under the mouse cursor
 			cursorObject = Instantiate(cursorPrefab, transform.root);
 			cursorObject.GetComponent<SpriteRenderer>().sprite = toClone.GetComponentInChildren<SpriteRenderer>().sprite;
+			lightingSystem.enabled = false;
 		}
 		else if (newState == State.INACTIVE)
 		{
 			statusText.text = "Click to select object to clone (ESC to Cancel)";
 			UIManager.IsMouseInteractionDisabled = false;
+			lightingSystem.enabled = true;
 			gameObject.SetActive(false);
 		}
 
@@ -113,22 +123,29 @@ public class GUI_DevCloner : MonoBehaviour
 			//check which objects we are over, pick the top one to spawn
 			if (CommonInput.GetMouseButtonDown(0))
 			{
-				SpriteRenderer hitRender = Physics2D.RaycastAll(Camera.main.ScreenToWorldPoint(CommonInput.mousePosition), Vector2.zero, 10f, layerMask)
-					//get the hit game object
-					.Select(hit => hit.transform.gameObject)
-					//check if there is a CNT
-					.Where(go => go.GetComponent<CustomNetTransform>() != null)
-					//sprite renderer so we can order by layer and figure out which was on top
-					.Select(go => go.GetComponentInChildren<SpriteRenderer>())
-					.Where(r => r != null)
-					//order by sort layer
-					.OrderByDescending(r => SortingLayer.GetLayerValueFromID(r.sortingLayerID))
-					//then by sort order
-					.ThenByDescending(renderer => renderer.sortingOrder)
-					.First();
-				if (hitRender != null)
+				//NOTE: Avoiding multiple enumeration by converting IEnumerables to lists.
+				var hitGOs = MouseUtils.GetOrderedObjectsUnderMouse(layerMask,
+					go => go.GetComponent<CustomNetTransform>() != null)
+					.Select(r => r.GetComponentInParent<CustomNetTransform>().gameObject).ToList();
+				//warn about objects which cannot be cloned
+				var nonPooledHits = hitGOs
+					.Where(go => PoolManager.DeterminePrefab(go) == null).ToList();
+				if (nonPooledHits.Any())
 				{
-					toClone = hitRender.GetComponentInParent<CustomNetTransform>().gameObject;
+					foreach (GameObject nonPooled in nonPooledHits)
+					{
+						Logger.LogWarningFormat("Object {0} does not have a PoolPrefabTracker component and its name" +
+						                        " did not match one of our existing prefabs " +
+						                        "therefore cannot be cloned (because we wouldn't know which prefab to instantiate). " +
+						                        "Please attach this component to the object and specify the prefab" +
+						                        " to allow it to be cloned.", Category.ItemSpawn, nonPooled.name);
+					}
+				}
+
+				var pooledHits = hitGOs.Where(go => PoolManager.DeterminePrefab(go) != null).ToList();
+				if (pooledHits.Any())
+				{
+					toClone = pooledHits.First();
 					ToState(State.DRAWING);
 				}
 

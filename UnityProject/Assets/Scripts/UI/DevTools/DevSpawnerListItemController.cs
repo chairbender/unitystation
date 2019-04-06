@@ -32,9 +32,12 @@ public class DevSpawnerListItemController : MonoBehaviour
 	// so we can escape while drawing - enabled while drawing, disabled when done
 	private EscapeKeyTarget escapeKeyTarget;
 
+	private LightingSystem lightingSystem;
+
 	private void Start()
 	{
 		escapeKeyTarget = GetComponent<EscapeKeyTarget>();
+		lightingSystem = Camera.main.GetComponent<LightingSystem>();
 	}
 
 
@@ -102,6 +105,7 @@ public class DevSpawnerListItemController : MonoBehaviour
 			escapeKeyTarget.enabled = false;
 			selectedItem = null;
 			drawingMessage.SetActive(false);
+			lightingSystem.enabled = true;
 		}
 	}
 
@@ -123,6 +127,7 @@ public class DevSpawnerListItemController : MonoBehaviour
 			escapeKeyTarget.enabled = true;
 			selectedItem = this;
 			drawingMessage.SetActive(true);
+			lightingSystem.enabled = false;
 		}
 	}
 
