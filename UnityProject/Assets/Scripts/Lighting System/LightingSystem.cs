@@ -262,6 +262,7 @@ public class LightingSystem : MonoBehaviour
 
 	private void OnEnable()
 	{
+		Logger.Log("Lighting system enabled.", Category.Lighting);
 		//don't run lighting system on headless
 		if (GameData.IsHeadlessServer)
 		{
@@ -283,25 +284,19 @@ public class LightingSystem : MonoBehaviour
 
 		ValidateMainCamera(mMainCamera, renderSettings);
 
-		if (mOcclusionRenderer == null)
-		{
-			mOcclusionRenderer = OcclusionMaskRenderer.InitializeMaskRenderer(gameObject, renderSettings.occlusionLayers, materialContainer.OcclusionMaskShader);
-		}
+		//TODO: Might want null checks back? Order?
+		mOcclusionRenderer = OcclusionMaskRenderer.InitializeMaskRenderer(gameObject, renderSettings.occlusionLayers, materialContainer.OcclusionMaskShader);
 
-		if (mLightMaskRenderer == null)
-		{
-			mLightMaskRenderer = LightMaskRenderer.InitializeMaskRenderer(gameObject);
-		}
+		mLightMaskRenderer = LightMaskRenderer.InitializeMaskRenderer(gameObject);
 
-		if (mBackgroundRenderer == null)
-		{
-			mBackgroundRenderer = BackgroundRenderer.InitializeMaskRenderer(gameObject);
-		}
+		mBackgroundRenderer = BackgroundRenderer.InitializeMaskRenderer(gameObject);
 
-		if (mPostProcessingStack == null)
-		{
-			mPostProcessingStack = new PostProcessingStack(materialContainer);
-		}
+		mPostProcessingStack = new PostProcessingStack(materialContainer);
+
+
+		operationParameters = new OperationParameters(mMainCamera, renderSettings, matrixRotationMode);;
+
+		ResolveRenderingTextures(operationParameters);
 	}
 
 	private Vector2 ProviderPPPosition(Vector3 iPosition, Vector3 iPreviousPosition, Vector2 iPreviousFilteredPosition)
@@ -311,6 +306,7 @@ public class LightingSystem : MonoBehaviour
 
 	private void OnDisable()
 	{
+		Logger.Log("Lighting system disabled.", Category.Lighting);
 		//don't run lighting system on headless
 		if (GameData.IsHeadlessServer)
 		{
