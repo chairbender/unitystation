@@ -40,7 +40,6 @@ public class ClothFactory : NetworkBehaviour
 	{
 		if (Instance == null)
 		{
-			//TODO: What's the proper way to prevent this?
 			Logger.LogError("ClothFactory was attempted to be used before it has initialized. Please delay using" +
 			                " ClothFactory (such as by using a coroutine to wait) until it is initialized. Nothing will" +
 			                " be done and null will be returned.");
