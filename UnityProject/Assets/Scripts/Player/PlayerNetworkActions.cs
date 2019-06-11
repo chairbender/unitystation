@@ -589,7 +589,7 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 	{
 		if (CanInteractWallmount(switchObj.GetComponent<WallmountBehavior>()))
 		{
-			ShutterSwitchTrigger s = switchObj.GetComponent<ShutterSwitchTrigger>();
+			ShutterSwitch s = switchObj.GetComponent<ShutterSwitch>();
 			if (s.IsClosed)
 			{
 				s.IsClosed = false;
@@ -602,7 +602,7 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 		else
 		{
 			Logger.LogWarningFormat("Player {0} attempted to interact with shutter switch through wall," +
-				" this could indicate a hacked client.", Category.Exploits, this.gameObject.name); 
+				" this could indicate a hacked client.", Category.Exploits, this.gameObject.name);
 		}
 	}
 
