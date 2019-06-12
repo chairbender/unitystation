@@ -5,8 +5,11 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
+/// <summary>
+/// Allows closet to be opened / closed / locked
+/// </summary>
 [RequireComponent(typeof(RightClickAppearance))]
-public class ClosetControl : InputTrigger, IRightClickable
+public class ClosetControl : NetworkBehaviour, IInteractable<HandApply>, IRightClickable
 {
 	private Sprite doorClosed;
 	public Sprite doorOpened;
@@ -191,19 +194,15 @@ public class ClosetControl : InputTrigger, IRightClickable
 		InteractInternal(false);
 	}
 
-	public override bool Interact(GameObject originator, Vector3 position, string hand)
+	public InteractionControl Interact(HandApply interaction)
 	{
-		return InteractInternal();
+		return InteractInternal(interaction.UsedObject != null) ? InteractionControl.STOP_PROCESSING : InteractionControl.CONTINUE_PROCESSING;
 	}
 
 	private bool InteractInternal(bool placeItem = true)
 	{
-		//this better be rewritten to net messages: following code is executed on clientside
+		//this better be rewritten to use IF2 Interactable: following code is executed on clientside
 		PlayerScript localPlayer = PlayerManager.LocalPlayerScript;
-		if (localPlayer.canNotInteract())
-		{
-			return true;
-		}
 
 		bool isInReach = localPlayer.IsInReach(registerTile, false);
 		if (isInReach || localPlayer.IsHidden)
@@ -364,4 +363,6 @@ public class ClosetControl : InputTrigger, IRightClickable
 
 		return result;
 	}
+
+
 }
