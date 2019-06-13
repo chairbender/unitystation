@@ -802,7 +802,7 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 			return;
 		}
 
-		FoodBehaviour baseFood = food.GetComponent<FoodBehaviour>();
+		Edible baseFood = food.GetComponent<Edible>();
 		if (isDrink)
 		{
 			SoundManager.PlayNetworkedAtPos( "Slurp", transform.position );
