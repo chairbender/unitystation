@@ -113,15 +113,15 @@ public class Matrix : MonoBehaviour
 		return true;
 	}
 
-	public IEnumerable<T> Get<T>(Vector3Int position, bool isServer) where T : MonoBehaviour
+	public IEnumerable<T> Get<T>(Vector3Int localPosition, bool isServer)
 	{
-		if ( !(isServer ? ServerObjects : ClientObjects).HasObjects( position ) )
+		if ( !(isServer ? ServerObjects : ClientObjects).HasObjects( localPosition ) )
 		{
 			return Enumerable.Empty<T>(); //?
 		}
 
 		var filtered = new List<T>();
-		foreach ( RegisterTile t in (isServer ? ServerObjects : ClientObjects).Get(position) )
+		foreach ( RegisterTile t in (isServer ? ServerObjects : ClientObjects).Get(localPosition) )
 		{
 			T x = t.GetComponent<T>();
 			if (x != null)
@@ -148,15 +148,15 @@ public class Matrix : MonoBehaviour
 		return null;
 	}
 
-	public IEnumerable<T> Get<T>(Vector3Int position, ObjectType type, bool isServer) where T : MonoBehaviour
+	public IEnumerable<T> Get<T>(Vector3Int localPosition, ObjectType type, bool isServer) where T : MonoBehaviour
 	{
-		if ( !(isServer ? ServerObjects : ClientObjects).HasObjects( position ) )
+		if ( !(isServer ? ServerObjects : ClientObjects).HasObjects( localPosition ) )
 		{
 			return Enumerable.Empty<T>();
 		}
 
 		var filtered = new List<T>();
-		foreach ( RegisterTile t in (isServer ? ServerObjects : ClientObjects).Get(position, type) )
+		foreach ( RegisterTile t in (isServer ? ServerObjects : ClientObjects).Get(localPosition, type) )
 		{
 			T x = t.GetComponent<T>();
 			if (x != null)

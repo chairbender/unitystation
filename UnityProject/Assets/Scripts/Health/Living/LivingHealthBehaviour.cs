@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 /// Monitors and calculates health
 /// </summary>
 [RequireComponent(typeof(HealthStateMonitor))]
-public abstract class LivingHealthBehaviour : NetworkBehaviour
+public abstract class LivingHealthBehaviour : NetworkBehaviour, IFireExposable
 {
 	public float maxHealth = 100;
 
@@ -277,6 +277,12 @@ public abstract class LivingHealthBehaviour : NetworkBehaviour
 		var prevHealth = OverallHealth;
 		Logger.LogTraceFormat("{3} received {0} {4} healing from {6} aimed for {5}. Health: {1}->{2}", Category.Health,
 			healAmt, prevHealth, OverallHealth, gameObject.name, damageTypeToHeal, bodyPartAim, healingItem);
+	}
+
+
+	public void OnExposed(FireExposure exposure)
+	{
+		//TODO: Implement
 	}
 
 	/// ---------------------------

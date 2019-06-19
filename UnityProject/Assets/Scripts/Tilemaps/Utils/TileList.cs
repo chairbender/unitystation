@@ -35,22 +35,22 @@ using UnityEngine;
 				_objects[position].Add(obj);
 			}
 		}
-		public bool HasObjects(Vector3Int position)
+		public bool HasObjects(Vector3Int localPosition)
 		{
-			return _objects.ContainsKey(position) && _objects[position].Count > 0;
+			return _objects.ContainsKey(localPosition) && _objects[localPosition].Count > 0;
 		}
-		public IEnumerable<RegisterTile> Get(Vector3Int position)
+		public IEnumerable<RegisterTile> Get(Vector3Int localPosition)
 		{
-			return _objects.ContainsKey(position) ? _objects[position] : emptyList;
+			return _objects.ContainsKey(localPosition) ? _objects[localPosition] : emptyList;
 		}
 
-		public IEnumerable<RegisterTile> Get(Vector3Int position, ObjectType type) {
-			if ( !HasObjects( position ) )
+		public IEnumerable<RegisterTile> Get(Vector3Int localPosition, ObjectType type) {
+			if ( !HasObjects( localPosition ) )
 			{
 				return emptyList;
 			}
 			var list = new List<RegisterTile>();
-			foreach ( RegisterTile x in Get( position ) )
+			foreach ( RegisterTile x in Get( localPosition ) )
 			{
 				if ( x.ObjectType == type ) {
 					list.Add( x );
@@ -60,13 +60,13 @@ using UnityEngine;
 			return list;
 		}
 
-		public IEnumerable<T> Get<T>(Vector3Int position) where T : RegisterTile {
-			if ( !HasObjects( position ) )
+		public IEnumerable<T> Get<T>(Vector3Int localPosition) where T : RegisterTile {
+			if ( !HasObjects( localPosition ) )
 			{
 				return Enumerable.Empty<T>();
 			}
 			var list = new List<T>();
-			foreach ( RegisterTile t in Get( position ) )
+			foreach ( RegisterTile t in Get( localPosition ) )
 			{
 				T unknown = t as T;
 				if ( t != null ) {

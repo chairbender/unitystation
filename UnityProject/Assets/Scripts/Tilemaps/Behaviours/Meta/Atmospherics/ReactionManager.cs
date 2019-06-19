@@ -120,16 +120,16 @@ public class ReactionManager : MonoBehaviour
 		timePassed = 0;
 	}
 
-	public void ExposeHotspot(Vector3Int position, float temperature, float volume)
+	public void ExposeHotspot(Vector3Int localPosition, float temperature, float volume)
 	{
-		if (hotspots.ContainsKey(position) && hotspots[position].Hotspot != null)
+		if (hotspots.ContainsKey(localPosition) && hotspots[localPosition].Hotspot != null)
 		{
 			// TODO soh?
-			hotspots[position].Hotspot.UpdateValues(volume * 25, temperature);
+			hotspots[localPosition].Hotspot.UpdateValues(volume * 25, temperature);
 		}
 		else
 		{
-			MetaDataNode node = metaDataLayer.Get(position);
+			MetaDataNode node = metaDataLayer.Get(localPosition);
 			GasMix gasMix = node.GasMix;
 
 			if (gasMix.GetMoles(Gas.Plasma) > 0.5 && gasMix.GetMoles(Gas.Oxygen) > 0.5 && temperature > Reactions.PLASMA_MINIMUM_BURN_TEMPERATURE)
@@ -137,16 +137,16 @@ public class ReactionManager : MonoBehaviour
 				// igniting
 				Hotspot hotspot = new Hotspot(node, temperature, volume * 25);
 				node.Hotspot = hotspot;
-				hotspots[position] = node;
+				hotspots[localPosition] = node;
 			}
 		}
 
-		if (hotspots.ContainsKey(position) && hotspots[position].Hotspot != null)
+		if (hotspots.ContainsKey(localPosition) && hotspots[localPosition].Hotspot != null)
 		{
-			var healths = matrix.Get<LivingHealthBehaviour>(position, true);
-			foreach (LivingHealthBehaviour health in healths)
+			var fireExposables = matrix.Get<IFireExposable>(localPosition, true);
+			foreach (var exposable in fireExposables)
 			{
-				health.ApplyDamage(null, 1, DamageType.Burn);
+				exposable.OnExposed(FireExposure.FromMetaDataNode(hotspots[localPosition]));
 			}
 		}
 	}
