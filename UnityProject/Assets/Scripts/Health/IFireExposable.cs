@@ -1,7 +1,7 @@
 
 /// <summary>
-/// Allows a component to be do something when in contact with fire. It's up to the component what
-/// it does in response to this.
+/// Implement this on a component to cause that component to do something when in contact with fire. It's up to the component what
+/// it does in response to fire exposure.
 /// </summary>
 public interface IFireExposable
 {

@@ -146,8 +146,19 @@ public class Grenade : NBHandActivateInteractable
 
 		foreach (KeyValuePair<GameObject, int> pair in toBeDamaged)
 		{
-			pair.Key.GetComponent<LivingHealthBehaviour>()
-				.ApplyDamage(pair.Key, pair.Value, DamageType.Burn);
+			if (pair.Key.GetComponent<LivingHealthBehaviour>() != null)
+			{
+				//damage players
+				pair.Key.GetComponent<LivingHealthBehaviour>()
+					.ApplyDamage(pair.Key, pair.Value, DamageType.Burn);
+			}
+			else if (pair.Key.GetComponent<Integrity>() != null)
+			{
+				//damage objects
+				pair.Key.GetComponent<Integrity>()
+					.ApplyDamage(pair.Value, DamageType.Burn);
+			}
+
 		}
 	}
 
@@ -168,8 +179,9 @@ public class Grenade : NBHandActivateInteractable
 
 	private static bool HasHealthComponent(Collider2D localCollider)
 	{
-		return localCollider.gameObject.GetComponent<LivingHealthBehaviour>() != null;
-	}
+		return localCollider.gameObject.GetComponent<LivingHealthBehaviour>() != null ||
+			localCollider.gameObject.GetComponent<Integrity>() != null;
+}
 
 	private bool NotSameObject(Collider2D localCollider)
 	{

@@ -8,7 +8,10 @@ public class EffectsFactory : NetworkBehaviour
 	private GameObject fireTile { get; set; }
 	private GameObject scorchMarksTile { get; set; }
 
-	private GameObject bloodTile { get; set; }
+	private GameObject smallBloodTile;
+	private GameObject mediumBloodTile;
+	private GameObject largeBloodTile;
+	private GameObject largeAshTile { get; set; }
 	private GameObject waterTile { get; set; }
 
 	private void Awake()
@@ -28,7 +31,10 @@ public class EffectsFactory : NetworkBehaviour
 		//Do init stuff
 		fireTile = Resources.Load("FireTile") as GameObject;
 		scorchMarksTile = Resources.Load("ScorchMarks") as GameObject;
-		bloodTile = Resources.Load("BloodSplat") as GameObject;
+		smallBloodTile = Resources.Load("SmallBloodSplat") as GameObject;
+		mediumBloodTile = Resources.Load("MediumBloodSplat") as GameObject;
+		largeBloodTile = Resources.Load("LargeBloodSplat") as GameObject;
+		largeAshTile = Resources.Load("LargeAsh") as GameObject;
 		waterTile = Resources.Load("WaterSplat") as GameObject;
 	}
 
@@ -54,37 +60,42 @@ public class EffectsFactory : NetworkBehaviour
 	}
 
 	[Server]
-	public void BloodSplat(Vector3 pos, BloodSplatSize splatSize)
+	public void BloodSplat(Vector3 worldPos, BloodSplatSize splatSize)
 	{
-		//blood splat should be relative to the matrix it appears in, but parented to Objects just like all
-		// the other objects in the matrix
-		GameObject b = PoolManager.PoolNetworkInstantiate(bloodTile, pos,
-			MatrixManager.AtPoint(Vector3Int.RoundToInt(pos), true).Objects);
-		BloodSplat bSplat = b.GetComponent<BloodSplat>();
-		//choose a random blood sprite
-		int spriteNum = 0;
+		GameObject chosenTile = null;
 		switch (splatSize)
 		{
 			case BloodSplatSize.small:
-				spriteNum = Random.Range(137, 139);
+				chosenTile = smallBloodTile;
 				break;
 			case BloodSplatSize.medium:
-				spriteNum = Random.Range(116, 120);
+				chosenTile = mediumBloodTile;
 				break;
 			case BloodSplatSize.large:
-				spriteNum = Random.Range(51, 56);
+				chosenTile = largeBloodTile;
 				break;
 		}
 
-		bSplat.sprite = spriteNum;
+		if (chosenTile != null)
+		{
+			PoolManager.PoolNetworkInstantiate(chosenTile, worldPos,
+				MatrixManager.AtPoint(Vector3Int.RoundToInt(worldPos), true).Objects);
+		}
+	}
+
+	/// <summary>
+	/// Creates ash at the specified tile position
+	/// </summary>
+	public void Ash(Vector2Int worldTilePos)
+	{
+		PoolManager.PoolNetworkInstantiate(largeAshTile, worldTilePos.To3Int(),
+			MatrixManager.AtPoint(worldTilePos.To3Int(), true).Objects);
 	}
 
 	[Server]
-	public void WaterSplat(Vector3 pos)
+	public void WaterSplat(Vector3 worldPos)
 	{
-		GameObject w = PoolManager.PoolNetworkInstantiate(waterTile, pos,
-			MatrixManager.AtPoint(Vector3Int.RoundToInt(pos), true).Objects, Quaternion.identity);
-		WaterSplat wSplat = w.GetComponent<WaterSplat>();
-		wSplat.sprite = 9;
+		PoolManager.PoolNetworkInstantiate(waterTile, worldPos,
+			MatrixManager.AtPoint(Vector3Int.RoundToInt(worldPos), true).Objects, Quaternion.identity);
 	}
 }

@@ -580,6 +580,7 @@ public partial class CustomNetTransform : ManagedNetworkBehaviour, IPushable //s
 	[Server]
 	public void FireSpawnHooks()
 	{
+		//TODO: Don't use broadcast - use interface instead
 		BroadcastMessage("OnSpawnedServer", SendMessageOptions.DontRequireReceiver);
 		RpcFireSpawnHook();
 	}
@@ -587,6 +588,7 @@ public partial class CustomNetTransform : ManagedNetworkBehaviour, IPushable //s
 	[ClientRpc]
 	private void RpcFireSpawnHook()
 	{
+		//TODO: Don't use broadcast - use interface instead
 		BroadcastMessage("OnSpawnedClient", SendMessageOptions.DontRequireReceiver);
 	}
 
@@ -597,6 +599,7 @@ public partial class CustomNetTransform : ManagedNetworkBehaviour, IPushable //s
 	[Server]
 	public void FireCloneHooks(GameObject clonedFrom)
 	{
+		//TODO: Don't use broadcast - use interface instead
 		BroadcastMessage("OnClonedServer", clonedFrom, SendMessageOptions.DontRequireReceiver);
 		RpcFireCloneHook(clonedFrom);
 	}
@@ -604,6 +607,7 @@ public partial class CustomNetTransform : ManagedNetworkBehaviour, IPushable //s
 	[ClientRpc]
 	private void RpcFireCloneHook(GameObject clonedFrom)
 	{
+		//TODO: Don't use broadcast - use interface instead
 		BroadcastMessage("OnClonedClient", clonedFrom, SendMessageOptions.DontRequireReceiver);
 	}
 }

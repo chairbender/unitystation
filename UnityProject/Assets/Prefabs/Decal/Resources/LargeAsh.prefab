@@ -9,13 +9,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4726396450817676}
+  - component: {fileID: 3173888393435981414}
   - component: {fileID: 5908745450454926434}
   - component: {fileID: 114418950606787226}
   - component: {fileID: 114595774069620348}
   - component: {fileID: 114262681174990446}
   - component: {fileID: 114758807010794188}
   m_Layer: 0
-  m_Name: BloodSplat
+  m_Name: LargeAsh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36,6 +37,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3173888393435981414
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1069497300762596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 579884b05ae74e8499329b64997147d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &5908745450454926434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45,11 +58,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1069497300762596}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f53093f0932e29442a2946746c454a2d, type: 3}
+  m_Script: {fileID: 11500000, guid: c77080d7d322e0d46b715644eb4b0ab9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sprite: 0
-  spriteRend: {fileID: 212268240904160500}
+  Cleanable: 1
+  SecondsUntilDisappear: -1
+  PossibleSprites: []
 --- !u!114 &114418950606787226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,7 +213,7 @@ SpriteRenderer:
   m_SortingLayerID: 322132419
   m_SortingLayer: 2
   m_SortingOrder: 30
-  m_Sprite: {fileID: 21300276, guid: fb20967b568ff594b80875b3b35fbf33, type: 3}
+  m_Sprite: {fileID: 21300342, guid: 74dafca618838400c96a204b96fa7ca4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

@@ -7,6 +7,7 @@ using UnityEngine;
 /// </summary>
 public class FireExposure
 {
+	//TODO: Doesn't duration matter? Depending on rate that atmos simulation is running?
 	private readonly float temperature;
 	private readonly Vector2Int localPosition;
 
