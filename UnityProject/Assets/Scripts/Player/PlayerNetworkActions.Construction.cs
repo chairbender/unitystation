@@ -14,6 +14,11 @@ public partial class PlayerNetworkActions : NetworkBehaviour
 			return;
 		}
 
+		//can't remove scorched tiles
+		var metaDataLayer = originator.GetComponentInParent<MetaDataLayer>();
+		var tile = metaDataLayer.Get(cellPos.RoundToInt());
+		if (tile.IsScorched) return;
+
 		tm.RemoveTile(Vector3Int.RoundToInt(cellPos), layer);
 
 		CraftingManager.Construction.SpawnFloorTile(Vector3Int.RoundToInt(worldPos), null); // TODO parent ?

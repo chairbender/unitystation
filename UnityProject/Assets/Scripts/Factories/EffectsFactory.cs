@@ -11,7 +11,8 @@ public class EffectsFactory : NetworkBehaviour
 	private GameObject smallBloodTile;
 	private GameObject mediumBloodTile;
 	private GameObject largeBloodTile;
-	private GameObject largeAshTile { get; set; }
+	private GameObject largeAshTile;
+	private GameObject smallAshTile;
 	private GameObject waterTile { get; set; }
 
 	private void Awake()
@@ -35,11 +36,12 @@ public class EffectsFactory : NetworkBehaviour
 		mediumBloodTile = Resources.Load("MediumBloodSplat") as GameObject;
 		largeBloodTile = Resources.Load("LargeBloodSplat") as GameObject;
 		largeAshTile = Resources.Load("LargeAsh") as GameObject;
+		smallAshTile = Resources.Load("SmallAsh") as GameObject;
 		waterTile = Resources.Load("WaterSplat") as GameObject;
 	}
 
 	//FileTiles are client side effects only, no need for network sync (triggered by same event on all clients/server)
-	public void SpawnFileTileLocal(float fuelAmt, Vector3 localPosition, Transform parent)
+	public void SpawnFireTileClient(float fuelAmt, Vector3 localPosition, Transform parent)
 	{
 		//ClientSide pool spawn
 		GameObject fireObj = PoolManager.PoolClientInstantiate(fireTile, Vector3.zero);
@@ -48,15 +50,6 @@ public class EffectsFactory : NetworkBehaviour
 		fireObj.transform.localPosition = localPosition;
 		FireTile fT = fireObj.GetComponent<FireTile>();
 		fT.StartFire(fuelAmt);
-	}
-
-	public GameObject SpawnScorchMarks(Transform parent)
-	{
-		//ClientSide spawn
-		GameObject sM =
-			PoolManager.PoolClientInstantiate(scorchMarksTile, parent.position);
-		sM.transform.parent = parent;
-		return sM;
 	}
 
 	[Server]
@@ -86,9 +79,11 @@ public class EffectsFactory : NetworkBehaviour
 	/// <summary>
 	/// Creates ash at the specified tile position
 	/// </summary>
-	public void Ash(Vector2Int worldTilePos)
+	/// <param name="worldTilePos"></param>
+	/// <param name="large">if true, spawns the large ash pile, otherwise spawns the small one</param>
+	public void Ash(Vector2Int worldTilePos, bool large)
 	{
-		PoolManager.PoolNetworkInstantiate(largeAshTile, worldTilePos.To3Int(),
+		PoolManager.PoolNetworkInstantiate(large ? largeAshTile : smallAshTile, worldTilePos.To3Int(),
 			MatrixManager.AtPoint(worldTilePos.To3Int(), true).Objects);
 	}
 

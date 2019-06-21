@@ -60,7 +60,6 @@ public class Integrity : MonoBehaviour, IFireExposable
 
 	public void OnExposed(FireExposure exposure)
 	{
-		//TODO: Need to scale this based on elapsed time probably, or set a "tick rate"
 		ApplyDamage(Mathf.Clamp(0.02f * exposure.Temperature, 0f, 20f), DamageType.Burn);
 	}
 
@@ -84,7 +83,7 @@ public class Integrity : MonoBehaviour, IFireExposable
 	/// </summary>
 	private void DefaultBurnUp()
 	{
-		EffectsFactory.Instance.Ash(registerTile.WorldPosition.To2Int());
+		EffectsFactory.Instance.Ash(registerTile.WorldPosition.To2Int(), false);
 		GetComponent<CustomNetTransform>().DisappearFromWorldServer();
 	}
 }

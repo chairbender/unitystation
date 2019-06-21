@@ -3,8 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class TilemapDamage : MonoBehaviour
+/// <summary>
+/// Allows for damaging tiles and updating tiles based on damage taken.
+/// </summary>
+public class TilemapDamage : MonoBehaviour, IFireExposable
 {
+	private static readonly float TILE_MIN_SCORCH_TEMPERATURE = 100f;
+
 	private TileChangeManager tileChangeManager;
 
 	private MetaDataLayer metaDataLayer;
@@ -15,6 +20,7 @@ public class TilemapDamage : MonoBehaviour
 	//FIXME: cache construction prefabs in CraftingManager.Construction:
 	private GameObject glassShardPrefab;
 	private GameObject rodsPrefab;
+	private Matrix matrix;
 
 	void Awake()
 	{
@@ -23,6 +29,7 @@ public class TilemapDamage : MonoBehaviour
 		metaTileMap = transform.GetComponentInParent<MetaTileMap>();
 
 		Layer = GetComponent<Layer>();
+		matrix = GetComponentInParent<Matrix>();
 	}
 
 	void Start()
@@ -218,5 +225,31 @@ public class TilemapDamage : MonoBehaviour
 
 		//Play the breaking window sfx:
 		SoundManager.PlayNetworkedAtPos("GlassBreak0" + Random.Range(1, 4), pos, 1f);
+	}
+
+	public void OnExposed(FireExposure exposure)
+	{
+		//Determine if tile should be scorched
+		if (Layer.LayerType != LayerType.Floors) return;
+		if (!(exposure.Temperature > TILE_MIN_SCORCH_TEMPERATURE)) return;
+		var cellPos = exposure.LocalPosition.To3Int();
+		if (!metaTileMap.HasTile(cellPos, true)) return;
+		//is it already scorched
+		var metaData = metaDataLayer.Get(exposure.LocalPosition.To3Int());
+		if (metaData.IsScorched) return;
+
+		//scorch the tile, choose appearance randomly
+		//TODO: This should be done using an overlay system which hasn't been implemented yet, this replaces
+		//the tile's original appearance
+		if (Random.value >= 0.5)
+		{
+			tileChangeManager.UpdateTile(cellPos, TileType.Floor, "floorscorched1");
+		}
+		else
+		{
+			tileChangeManager.UpdateTile(cellPos, TileType.Floor, "floorscorched2");
+		}
+
+		metaData.IsScorched = true;
 	}
 }

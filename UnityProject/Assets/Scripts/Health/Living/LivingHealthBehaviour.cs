@@ -282,7 +282,7 @@ public abstract class LivingHealthBehaviour : NetworkBehaviour, IFireExposable
 
 	public void OnExposed(FireExposure exposure)
 	{
-		//TODO: Implement
+		ApplyDamage(null, 1, DamageType.Burn);
 	}
 
 	/// ---------------------------

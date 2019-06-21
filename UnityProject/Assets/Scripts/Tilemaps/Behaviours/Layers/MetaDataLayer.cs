@@ -18,13 +18,13 @@ public class MetaDataLayer : MonoBehaviour
 		reactionManager = GetComponentInParent<ReactionManager>();
 	}
 
-	public MetaDataNode Get(Vector3Int position, bool createIfNotExists = true)
+	public MetaDataNode Get(Vector3Int localPosition, bool createIfNotExists = true)
 	{
-		if (!nodes.ContainsKey(position))
+		if (!nodes.ContainsKey(localPosition))
 		{
 			if (createIfNotExists)
 			{
-				nodes[position] = new MetaDataNode(position, reactionManager);
+				nodes[localPosition] = new MetaDataNode(localPosition, reactionManager);
 			}
 			else
 			{
@@ -32,7 +32,7 @@ public class MetaDataLayer : MonoBehaviour
 			}
 		}
 
-		return nodes[position];
+		return nodes[localPosition];
 	}
 
 	public bool IsSpaceAt(Vector3Int position)

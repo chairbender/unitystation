@@ -18,6 +18,7 @@ public class ReactionManager : MonoBehaviour
 
 	private Dictionary<Vector3Int, MetaDataNode> hotspots;
 	private UniqueQueue<MetaDataNode> winds;
+	private TilemapDamage[] tilemapDamages;
 
 	private float timePassed;
 	private float timePassed2;
@@ -31,6 +32,7 @@ public class ReactionManager : MonoBehaviour
 
 		hotspots = new Dictionary<Vector3Int, MetaDataNode>();
 		winds = new UniqueQueue<MetaDataNode>();
+		tilemapDamages = GetComponentsInChildren<TilemapDamage>();
 	}
 
 	private void Update()
@@ -144,9 +146,15 @@ public class ReactionManager : MonoBehaviour
 		if (hotspots.ContainsKey(localPosition) && hotspots[localPosition].Hotspot != null)
 		{
 			var fireExposables = matrix.Get<IFireExposable>(localPosition, true);
+			var exposure = FireExposure.FromMetaDataNode(hotspots[localPosition]);
 			foreach (var exposable in fireExposables)
 			{
-				exposable.OnExposed(FireExposure.FromMetaDataNode(hotspots[localPosition]));
+				exposable.OnExposed(exposure);
+			}
+			//expose the tiles
+			foreach (var tilemapDamage in tilemapDamages)
+			{
+				tilemapDamage.OnExposed(exposure);
 			}
 		}
 	}
