@@ -20,7 +20,9 @@ GameObject:
   - component: {fileID: 114624379089926182}
   - component: {fileID: 114077126202047732}
   - component: {fileID: 114913344249064064}
-  m_Layer: 10
+  - component: {fileID: 114204647305470786}
+  - component: {fileID: 114439288378307946}
+  m_Layer: 29
   m_Name: atmos_57
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,6 +142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9ae6b6bba5c4e3aa4780272577c9bcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HeatResistance: 1000
   objectBehaviour: {fileID: 0}
   container: {fileID: 0}
   connector: {fileID: 0}
@@ -252,6 +255,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteMatrixRotationBehavior: 1
+--- !u!114 &114204647305470786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1051541562388458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dfb85a893964a9f8ed7befb319d27ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114439288378307946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1051541562388458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f68d36ed5e334f99b82dc3801757e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1333712007147204
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,7 +289,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4172443963388572}
   - component: {fileID: 212188953855684958}
-  m_Layer: 10
+  m_Layer: 29
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -341,7 +368,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9194052239404940136}
   - component: {fileID: 3039931327835793096}
-  m_Layer: 10
+  m_Layer: 29
   m_Name: Connection
   m_TagString: Untagged
   m_Icon: {fileID: 0}

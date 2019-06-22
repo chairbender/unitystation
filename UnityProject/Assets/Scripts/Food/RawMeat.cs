@@ -12,15 +12,16 @@ public class RawMeat : MonoBehaviour
 	private void Awake()
 	{
 		integrity = GetComponent<Integrity>();
-		integrity.OnBurnUpServer = OnBurnUpServer;
+		integrity.OnBurnUpServer += OnBurnUpServer;
 		meatSteakPrefab = Resources.Load<GameObject>("Meat Steak");
 		registerTile = GetComponent<RegisterTile>();
 	}
 
-	private void OnBurnUpServer()
+	private void OnBurnUpServer(DestructionInfo info)
 	{
 		//cook the meat by destroying this meat and spawning a meat steak
 		PoolManager.PoolNetworkInstantiate(meatSteakPrefab, registerTile.WorldPosition, transform.parent);
-		GetComponent<CustomNetTransform>().DisappearFromWorldServer();
+		ChatRelay.Instance.AddToChatLogServer(new ChatEvent($"The {name} is cooked to perfection.", ChatChannel.Local));
+		PoolManager.PoolNetworkDestroy(gameObject);
 	}
 }

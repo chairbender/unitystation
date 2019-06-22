@@ -231,17 +231,20 @@ public abstract class LivingHealthBehaviour : NetworkBehaviour, IFireExposable
 	/// </summary>
 	/// <param name="damagedBy">The player or object that caused the damage. Null if there is none</param>
 	/// <param name="damage">Damage Amount</param>
+	/// <param name="attackType">type of attack that is causing the damage</param>
 	/// <param name="damageType">The Type of Damage</param>
 	/// <param name="bodyPartAim">Body Part that is affected</param>
 	[Server]
 	public virtual void ApplyDamage(GameObject damagedBy, float damage,
-		DamageType damageType, BodyPartType bodyPartAim = BodyPartType.Chest)
+		AttackType attackType, DamageType damageType, BodyPartType bodyPartAim = BodyPartType.Chest)
 	{
 		BodyPartBehaviour bodyPartBehaviour = GetBodyPart(damage, damageType, bodyPartAim);
 		if(bodyPartBehaviour == null)
 		{
 			return;
 		}
+		//TODO: determine and apply armor protection
+
 		LastDamageType = damageType;
 		LastDamagedBy = damagedBy;
 		bodyPartBehaviour.ReceiveDamage(damageType, damage);
@@ -282,7 +285,7 @@ public abstract class LivingHealthBehaviour : NetworkBehaviour, IFireExposable
 
 	public void OnExposed(FireExposure exposure)
 	{
-		ApplyDamage(null, 1, DamageType.Burn);
+		ApplyDamage(null, 1, AttackType.Fire, DamageType.Burn);
 	}
 
 	/// ---------------------------

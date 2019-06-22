@@ -13,15 +13,41 @@ using UnityEngine.Events;
 /// </summary>
 [RequireComponent(typeof(CustomNetTransform))]
 [RequireComponent(typeof(RegisterTile))]
+[RequireComponent(typeof(Meleeable))]
 public class Integrity : MonoBehaviour, IFireExposable
 {
+
 	/// <summary>
-	/// Server-side callback to invoke when object integrity reaches 0 due to fire damage.
-	/// By default, the object is destroyed and leaves ash behind. Replacing this
-	/// with a different action will override this behavior.
+	/// Server-side event invoked when object integrity reaches 0 by any means and object
+	/// destruction logic is about to be invoked. Does not override the default destruction logic,
+	/// simply provides a hook for when it is going to be invoked.
 	/// </summary>
 	[NonSerialized]
-	public UnityAction OnBurnUpServer;
+	public DestructionEvent OnWillDestroyServer = new DestructionEvent();
+
+	/// <summary>
+	/// Server-side burn up logic - invoked when integrity reaches 0 due to burn damage.
+	/// Setting this will override the default burn up logic.
+	/// See OnWillDestroyServer if you only want an event when the object is destroyed
+	/// and don't want to override the burn up logic.
+	/// </summary>
+	/// <returns></returns>
+	[NonSerialized]
+	public UnityAction<DestructionInfo> OnBurnUpServer;
+
+	/// <summary>
+	/// Armor for this object. This can be set in inspector but some
+	/// components might override this value in code.
+	/// </summary>
+	[Tooltip("Armor for this object. This can be set in inspector but some" +
+	         " components might override this value in code.")]
+	public Armor Armor = new Armor();
+
+	/// <summary>
+	/// Below this temperature, the object will take no damage from fire or heat.
+	/// </summary>
+	[Tooltip("Below this temperature, the object will take no damage from fire or heat.")]
+	public float HeatResistance = 100;
 
 	private float integrity = 100f;
 	private DamageType lastDamageType;
@@ -37,12 +63,16 @@ public class Integrity : MonoBehaviour, IFireExposable
 	/// </summary>
 	/// <param name="damage"></param>
 	/// <param name="damageType"></param>
-	public void ApplyDamage(float damage, DamageType damageType)
+	public void ApplyDamage(float damage, AttackType attackType, DamageType damageType)
 	{
-		integrity -= damage;
-		lastDamageType = damageType;
-		CheckDestruction();
-		Logger.LogTraceFormat("{0} took {1} {2} damage", Category.Health, name, damage, damageType);
+		damage = Armor.GetDamage(damage, attackType);
+		if (damage > 0)
+		{
+			integrity -= damage;
+			lastDamageType = damageType;
+			CheckDestruction();
+			Logger.LogTraceFormat("{0} took {1} {2} damage from {3} attack (resistance {4}) (integrity now {5})", Category.Health, name, damage, damageType, attackType, Armor.GetRating(attackType), integrity);
+		}
 	}
 
 
@@ -50,40 +80,77 @@ public class Integrity : MonoBehaviour, IFireExposable
 	{
 		if (integrity <= 0)
 		{
-			if (lastDamageType == DamageType.Burn)
+			var destructInfo = new DestructionInfo(lastDamageType);
+			OnWillDestroyServer.Invoke(destructInfo);
+
+			if (destructInfo.DamageType == DamageType.Burn)
 			{
-				BurnUp();
+				if (OnBurnUpServer != null)
+				{
+					OnBurnUpServer(destructInfo);
+				}
+				else
+				{
+					DefaultBurnUp(destructInfo);
+				}
 			}
-			//TODO: Other damage types
+			else
+			{
+				DefaultDestroy(destructInfo);
+			}
+		}
+	}
+
+	private void DefaultBurnUp(DestructionInfo info)
+	{
+		//just a guess - objects which can be picked up should have a smaller amount of ash
+		EffectsFactory.Instance.Ash(registerTile.WorldPosition.To2Int(), GetComponent<Pickupable>() == null);
+		ChatRelay.Instance.AddToChatLogServer(new ChatEvent($"{name} burnt to ash.", ChatChannel.Local));
+		PoolManager.PoolNetworkDestroy(gameObject);
+	}
+
+	private void DefaultDestroy(DestructionInfo info)
+	{
+		if (info.DamageType == DamageType.Brute)
+		{
+			ChatRelay.Instance.AddToChatLogServer(new ChatEvent($"{name} was smashed to pieces.", ChatChannel.Local));
+			PoolManager.PoolNetworkDestroy(gameObject);
+		}
+		//TODO: Other damage types (acid)
+		else
+		{
+			ChatRelay.Instance.AddToChatLogServer(new ChatEvent($"{name} was destroyed.", ChatChannel.Local));
+			PoolManager.PoolNetworkDestroy(gameObject);
 		}
 	}
 
 	public void OnExposed(FireExposure exposure)
 	{
-		ApplyDamage(Mathf.Clamp(0.02f * exposure.Temperature, 0f, 20f), DamageType.Burn);
-	}
-
-	/// <summary>
-	/// Invoked when object integrity reaches 0 due to burn damage
-	/// </summary>
-	private void BurnUp()
-	{
-		if (OnBurnUpServer != null)
+		if (exposure.Temperature > HeatResistance)
 		{
-			OnBurnUpServer();
-		}
-		else
-		{
-			DefaultBurnUp();
+			ApplyDamage(Mathf.Clamp(0.02f * exposure.Temperature, 0f, 20f), AttackType.Fire, DamageType.Burn);
 		}
 	}
 
+}
+
+/// <summary>
+/// Contains info on how an object was destroyed
+/// </summary>
+public class DestructionInfo
+{
 	/// <summary>
-	/// Default burn logic, destroys object and leaves ash decal
+	/// Damage that destroyed the object
 	/// </summary>
-	private void DefaultBurnUp()
+	public readonly DamageType DamageType;
+
+	public DestructionInfo(DamageType damageType)
 	{
-		EffectsFactory.Instance.Ash(registerTile.WorldPosition.To2Int(), false);
-		GetComponent<CustomNetTransform>().DisappearFromWorldServer();
+		DamageType = damageType;
 	}
 }
+
+/// <summary>
+/// Event fired when an object is destroyed
+/// </summary>
+public class DestructionEvent : UnityEvent<DestructionInfo>{}

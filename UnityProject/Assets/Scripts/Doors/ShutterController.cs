@@ -109,7 +109,7 @@ public class ShutterController : ObjectTrigger
 	{
 		foreach ( LivingHealthBehaviour healthBehaviour in matrix.Get<LivingHealthBehaviour>(registerTile.PositionServer, true) )
 		{
-			healthBehaviour.ApplyDamage(gameObject, 500, DamageType.Brute);
+			healthBehaviour.ApplyDamage(gameObject, 500, AttackType.Melee, DamageType.Brute);
 		}
 	}
 

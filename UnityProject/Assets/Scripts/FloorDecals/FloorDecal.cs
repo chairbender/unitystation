@@ -76,7 +76,7 @@ public class FloorDecal : NetworkBehaviour
 	{
 		if (Cleanable)
 		{
-			GetComponent<CustomNetTransform>().DisappearFromWorldServer();
+			PoolManager.PoolNetworkDestroy(gameObject);
 		}
 	}
 }

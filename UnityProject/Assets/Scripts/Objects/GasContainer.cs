@@ -1,14 +1,20 @@
+using System;
 using System.Collections.Generic;
 using Atmospherics;
 using Boo.Lang;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Serialization;
+using Random = System.Random;
 
 namespace Objects
 {
+	[RequireComponent(typeof(Integrity))]
 	public class GasContainer : NetworkBehaviour, IGasMixContainer
 	{
+		//max pressure for determining explosion effects - effects will be maximum at this contained pressure
+		private static readonly float MAX_EXPLOSION_EFFECT_PRESSURE = 148517f;
+
 		public GasMix GasMix { get; set; }
 
 		public bool Opened;
@@ -19,9 +25,36 @@ namespace Objects
 		public float Temperature;
 		public float[] Gases = new float[Gas.Count];
 
+		private GameObject metalPrefab;
+
 		public override void OnStartServer()
 		{
+			metalPrefab = Resources.Load<GameObject>("Metal");
 			UpdateGasMix();
+			GetComponent<Integrity>().OnWillDestroyServer.AddListener(OnWillDestroyServer);
+
+		}
+
+		private void OnWillDestroyServer(DestructionInfo info)
+		{
+			var tileWorldPosition = gameObject.TileWorldPosition().To3Int();
+			//release all of our gases at once when destroyed
+			MetaDataLayer metaDataLayer = MatrixManager.AtPoint(tileWorldPosition, true).MetaDataLayer;
+			Vector3Int position = transform.localPosition.RoundToInt();
+			MetaDataNode node = metaDataLayer.Get(position, false);
+			var shakeIntensity = (byte) Mathf.Lerp( byte.MinValue, byte.MaxValue / 2, GasMix.Pressure / MAX_EXPLOSION_EFFECT_PRESSURE);
+			var shakeDistance = Mathf.Lerp(1, 64, GasMix.Pressure / MAX_EXPLOSION_EFFECT_PRESSURE);
+			node.GasMix += GasMix;
+			metaDataLayer.UpdateSystemsAt(position);
+			ChatRelay.Instance.AddToChatLogServer(new ChatEvent($"{name} exploded!", ChatChannel.Local));
+
+			//spawn a stack of metal
+			for (int i = 0; i < 4; i++)
+			{
+				PoolManager.PoolNetworkInstantiate(metalPrefab, tileWorldPosition, transform.parent, Quaternion.Euler(0,0,UnityEngine.Random.Range(0, 360)));
+			}
+
+			ExplosionUtils.PlaySoundAndShake(tileWorldPosition, shakeIntensity, (int) shakeDistance);
 		}
 
 		private void Update()

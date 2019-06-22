@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4714874764225132}
   - component: {fileID: 212357524740156146}
-  m_Layer: 0
+  m_Layer: 29
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 114183243700281508}
   - component: {fileID: 114856973896395130}
   - component: {fileID: 114386644002111336}
-  m_Layer: 11
+  m_Layer: 29
   m_Name: WeldingFuel
   m_TagString: Untagged
   m_Icon: {fileID: 0}

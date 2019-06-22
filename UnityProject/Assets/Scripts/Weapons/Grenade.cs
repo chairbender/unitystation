@@ -44,7 +44,6 @@ public class Grenade : NBHandActivateInteractable
 	[TooltipAttribute("Minimum duration grenade effects are visible depending on distance from center")]
 	public float minEffectDuration = .05f;
 
-	private readonly string[] EXPLOSION_SOUNDS = { "Explosion1", "Explosion2" };
 	//LayerMask for things that can be damaged
 	private int DAMAGEABLE_MASK;
 	//LayerMask for obstructions which can block the explosion
@@ -150,13 +149,13 @@ public class Grenade : NBHandActivateInteractable
 			{
 				//damage players
 				pair.Key.GetComponent<LivingHealthBehaviour>()
-					.ApplyDamage(pair.Key, pair.Value, DamageType.Burn);
+					.ApplyDamage(pair.Key, pair.Value, AttackType.Bomb, DamageType.Burn);
 			}
 			else if (pair.Key.GetComponent<Integrity>() != null)
 			{
 				//damage objects
 				pair.Key.GetComponent<Integrity>()
-					.ApplyDamage(pair.Value, DamageType.Burn);
+					.ApplyDamage(pair.Value, AttackType.Bomb, DamageType.Burn);
 			}
 
 		}
@@ -193,10 +192,8 @@ public class Grenade : NBHandActivateInteractable
 	/// </summary>
 	private void PlaySoundAndShake()
 	{
-		Vector3Int explodePosition = objectBehaviour.AssumedLocation().RoundToInt();
-		string sndName = EXPLOSION_SOUNDS[Random.Range(0, EXPLOSION_SOUNDS.Length)];
 		byte shakeIntensity = (byte)Mathf.Clamp( damage/5, byte.MinValue, byte.MaxValue);
-		SoundManager.PlayNetworkedAtPos( sndName, explodePosition, -1f, true, shakeIntensity, (int)shakeDistance);
+		ExplosionUtils.PlaySoundAndShake(objectBehaviour.AssumedLocation().RoundToInt(), shakeIntensity, (int) shakeDistance);
 	}
 
 
