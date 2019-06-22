@@ -97,6 +97,9 @@ GameObject:
   - component: {fileID: 5210483117512304919}
   - component: {fileID: 4352017894842036142}
   - component: {fileID: 114212155062859864}
+  - component: {fileID: 114848680329679376}
+  - component: {fileID: 114846822234193726}
+  - component: {fileID: 114724449344645608}
   m_Layer: 11
   m_Name: Cargo_Console
   m_TagString: Untagged
@@ -296,6 +299,54 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteMatrixRotationBehavior: 1
+--- !u!114 &114848680329679376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3365708065215268791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f68d36ed5e334f99b82dc3801757e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &114846822234193726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3365708065215268791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dfb85a893964a9f8ed7befb319d27ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Armor:
+    Melee: 0
+    Bullet: 0
+    Laser: 0
+    Energy: 0
+    Bomb: 0
+    Rad: 0
+    Fire: 0
+    Acid: 0
+    Magic: 0
+    Bio: 0
+  HeatResistance: 100
+--- !u!114 &114724449344645608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3365708065215268791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f68d36ed5e334f99b82dc3801757e89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3365832635514216189
 GameObject:
   m_ObjectHideFlags: 0

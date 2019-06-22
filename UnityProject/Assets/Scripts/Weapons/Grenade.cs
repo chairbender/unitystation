@@ -121,6 +121,8 @@ public class Grenade : NBHandActivateInteractable
 	public void CalcAndApplyExplosionDamage(string thanksTo)
 	{
 		Vector2 explosionPos = objectBehaviour.AssumedLocation().To2Int();
+		//trigger a hotspot caused by grenade explosion
+		GetComponentInParent<ReactionManager>().ExposeHotspot(explosionPos.RoundToInt(), 3200, 0.005f);
 		int length = colliders.Count;
 		Dictionary<GameObject, int> toBeDamaged = new Dictionary<GameObject, int>();
 		for (int i = 0; i < length; i++)
