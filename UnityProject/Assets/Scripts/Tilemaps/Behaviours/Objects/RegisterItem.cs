@@ -6,6 +6,8 @@ using UnityEngine.Serialization;
 [System.Serializable]
 public class OnCrossed : UnityEvent<RegisterPlayer>{};
 
+[RequireComponent(typeof(Integrity))]
+[RequireComponent(typeof(Meleeable))]
 [ExecuteInEditMode]
 public class RegisterItem : RegisterTile
 	{
