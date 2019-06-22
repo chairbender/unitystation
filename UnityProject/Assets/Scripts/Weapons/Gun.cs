@@ -484,7 +484,7 @@ public class Gun : NBAimApplyInteractable, IInteractable<HandActivate>, IInterac
 			DisplayShot(nextShot.shooter, nextShot.finalDirection, nextShot.damageZone, nextShot.isSuicide);
 
 			//trigger a hotspot caused by gun firing
-			GetComponentInParent<ReactionManager>().ExposeHotspot(nextShot.shooter.TileWorldPosition().To3Int(), 3200, 0.005f);
+			GetComponentInParent<ReactionManager>().ExposeHotspotWorldPosition(nextShot.shooter.TileWorldPosition(), 3200, 0.005f);
 
 			//tell all the clients to display the shot
 			ShootMessage.SendToAll(nextShot.finalDirection, nextShot.damageZone, nextShot.shooter, this.gameObject, nextShot.isSuicide);

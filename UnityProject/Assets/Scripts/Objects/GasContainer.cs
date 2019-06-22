@@ -46,7 +46,7 @@ namespace Objects
 			var shakeDistance = Mathf.Lerp(1, 64, GasMix.Pressure / MAX_EXPLOSION_EFFECT_PRESSURE);
 			node.GasMix += GasMix;
 			metaDataLayer.UpdateSystemsAt(position);
-			ChatRelay.Instance.AddToChatLogServer(new ChatEvent($"{name} exploded!", ChatChannel.Local));
+			ChatRelay.Instance.AddToChatLogServer(ChatEvent.Local($"{name} exploded!", gameObject.TileWorldPosition()));
 
 			//spawn a stack of metal
 			for (int i = 0; i < 4; i++)

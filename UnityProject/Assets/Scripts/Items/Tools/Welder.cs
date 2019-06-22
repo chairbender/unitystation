@@ -208,7 +208,7 @@ public class Welder : NBHandActivateInteractable
 					position = heldByPlayer.transform.localPosition.RoundToInt();
 				}
 
-				reactionManager.ExposeHotspot(position, 700, 0.005f);
+				reactionManager.ExposeHotspotWorldPosition(gameObject.TileWorldPosition(), 700, 0.005f);
 			}
 
 			yield return WaitFor.Seconds(.1f);

@@ -16,9 +16,7 @@ GameObject:
   - component: {fileID: 114605427988546660}
   - component: {fileID: 61191429627008892}
   - component: {fileID: 114380047310127628}
-  - component: {fileID: 114974224720458892}
-  - component: {fileID: 114076362345144812}
-  m_Layer: 29
+  m_Layer: 22
   m_Name: VIR_HighVoltageCable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -202,42 +200,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteMatrixRotationBehavior: 1
---- !u!114 &114974224720458892
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1042895037894172}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f68d36ed5e334f99b82dc3801757e89, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &114076362345144812
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1042895037894172}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7dfb85a893964a9f8ed7befb319d27ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Armor:
-    Melee: 0
-    Bullet: 0
-    Laser: 0
-    Energy: 0
-    Bomb: 0
-    Rad: 0
-    Fire: 0
-    Acid: 0
-    Magic: 0
-    Bio: 0
-  HeatResistance: 100
 --- !u!1 &1282939714934272
 GameObject:
   m_ObjectHideFlags: 0
@@ -248,7 +210,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4270488180542818}
   - component: {fileID: 212024194644658190}
-  m_Layer: 29
+  m_Layer: 22
   m_Name: sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -84,6 +84,20 @@ public class ChatEvent
 		}
 	}
 
+	/// <summary>
+	/// Convenient static factory for creating a ChatChannel.Local message.
+	/// </summary>
+	public static ChatEvent Local(string message, Vector2 atWorldPosition, float range = 9f)
+	{
+		return new ChatEvent
+		{
+			message = message,
+			channels = ChatChannel.Local,
+			position = atWorldPosition,
+			radius = range
+		};
+	}
+
 	public static ChatChannel GetNonNetworkedChannels()
 	{
 		return ChatChannel.Examine | ChatChannel.System;

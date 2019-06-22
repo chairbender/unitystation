@@ -21,7 +21,8 @@ public class RawMeat : MonoBehaviour
 	{
 		//cook the meat by destroying this meat and spawning a meat steak
 		PoolManager.PoolNetworkInstantiate(meatSteakPrefab, registerTile.WorldPosition, transform.parent);
-		ChatRelay.Instance.AddToChatLogServer(new ChatEvent($"The {name} is cooked to perfection.", ChatChannel.Local));
+		ChatRelay.Instance.AddToChatLogServer(ChatEvent.Local($"The {name} is cooked to perfection.",
+			gameObject.TileWorldPosition()));
 		PoolManager.PoolNetworkDestroy(gameObject);
 	}
 }

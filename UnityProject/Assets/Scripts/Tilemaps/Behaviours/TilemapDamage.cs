@@ -231,11 +231,13 @@ public class TilemapDamage : MonoBehaviour, IFireExposable
 	{
 		//Determine if tile should be scorched
 		if (Layer.LayerType != LayerType.Floors) return;
+		//TODO: Not currently handling side exposures on tiles
+		if (exposure.IsSideExposure) return;
 		if (!(exposure.Temperature > TILE_MIN_SCORCH_TEMPERATURE)) return;
-		var cellPos = exposure.LocalPosition.To3Int();
+		var cellPos = exposure.ExposedLocalPosition.To3Int();
 		if (!metaTileMap.HasTile(cellPos, true)) return;
 		//is it already scorched
-		var metaData = metaDataLayer.Get(exposure.LocalPosition.To3Int());
+		var metaData = metaDataLayer.Get(exposure.ExposedLocalPosition.To3Int());
 		if (metaData.IsScorched) return;
 
 		//scorch the tile, choose appearance randomly

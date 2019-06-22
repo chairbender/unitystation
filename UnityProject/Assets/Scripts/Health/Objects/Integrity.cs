@@ -50,12 +50,15 @@ public class Integrity : MonoBehaviour, IFireExposable
 	public float HeatResistance = 100;
 
 	private float integrity = 100f;
+	private bool destroyed = false;
 	private DamageType lastDamageType;
 	private RegisterTile registerTile;
+	private ObjectBehaviour objectBehaviour;
 
 	private void Awake()
 	{
 		registerTile = GetComponent<RegisterTile>();
+		objectBehaviour = GetComponent<ObjectBehaviour>();
 	}
 
 	/// <summary>
@@ -78,7 +81,7 @@ public class Integrity : MonoBehaviour, IFireExposable
 
 	private void CheckDestruction()
 	{
-		if (integrity <= 0)
+		if (!destroyed && integrity <= 0)
 		{
 			var destructInfo = new DestructionInfo(lastDamageType);
 			OnWillDestroyServer.Invoke(destructInfo);
@@ -98,6 +101,8 @@ public class Integrity : MonoBehaviour, IFireExposable
 			{
 				DefaultDestroy(destructInfo);
 			}
+
+			destroyed = true;
 		}
 	}
 
@@ -105,7 +110,7 @@ public class Integrity : MonoBehaviour, IFireExposable
 	{
 		//just a guess - objects which can be picked up should have a smaller amount of ash
 		EffectsFactory.Instance.Ash(registerTile.WorldPosition.To2Int(), GetComponent<Pickupable>() == null);
-		ChatRelay.Instance.AddToChatLogServer(new ChatEvent($"{name} burnt to ash.", ChatChannel.Local));
+		ChatRelay.Instance.AddToChatLogServer(ChatEvent.Local($"{name} burnt to ash.", gameObject.TileWorldPosition()));
 		PoolManager.PoolNetworkDestroy(gameObject);
 	}
 
@@ -113,13 +118,13 @@ public class Integrity : MonoBehaviour, IFireExposable
 	{
 		if (info.DamageType == DamageType.Brute)
 		{
-			ChatRelay.Instance.AddToChatLogServer(new ChatEvent($"{name} was smashed to pieces.", ChatChannel.Local));
+			ChatRelay.Instance.AddToChatLogServer(ChatEvent.Local($"{name} was smashed to pieces.", gameObject.TileWorldPosition()));
 			PoolManager.PoolNetworkDestroy(gameObject);
 		}
 		//TODO: Other damage types (acid)
 		else
 		{
-			ChatRelay.Instance.AddToChatLogServer(new ChatEvent($"{name} was destroyed.", ChatChannel.Local));
+			ChatRelay.Instance.AddToChatLogServer(ChatEvent.Local($"{name} was destroyed.",gameObject.TileWorldPosition()));
 			PoolManager.PoolNetworkDestroy(gameObject);
 		}
 	}
@@ -131,7 +136,6 @@ public class Integrity : MonoBehaviour, IFireExposable
 			ApplyDamage(Mathf.Clamp(0.02f * exposure.Temperature, 0f, 20f), AttackType.Fire, DamageType.Burn);
 		}
 	}
-
 }
 
 /// <summary>
