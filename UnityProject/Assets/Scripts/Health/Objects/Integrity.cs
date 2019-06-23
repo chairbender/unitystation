@@ -1,7 +1,12 @@
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Atmospherics;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Networking;
+using Object = System.Object;
 
 /// <summary>
 /// Component which allows an object to have an integrity value (basically an object's version of HP),
@@ -14,7 +19,7 @@ using UnityEngine.Events;
 [RequireComponent(typeof(CustomNetTransform))]
 [RequireComponent(typeof(RegisterTile))]
 [RequireComponent(typeof(Meleeable))]
-public class Integrity : MonoBehaviour, IFireExposable, IRightClickable
+public class Integrity : NetworkBehaviour, IFireExposable, IRightClickable
 {
 
 	/// <summary>
@@ -44,21 +49,77 @@ public class Integrity : MonoBehaviour, IFireExposable, IRightClickable
 	public Armor Armor = new Armor();
 
 	/// <summary>
-	/// Below this temperature, the object will take no damage from fire or heat.
+	/// resistances for this object. This can be set in inspector but some
+	/// components might override this value in code.
 	/// </summary>
-	[Tooltip("Below this temperature, the object will take no damage from fire or heat.")]
+	[Tooltip("Resistances of this object. This can be set in inspector but some" +
+	         " components might override this value in code.")]
+	public Resistances Resistances = new Resistances();
+
+	/// <summary>
+	/// Below this temperature, the object will take no damage from fire or heat and won't ignite.
+	/// </summary>
+	[Tooltip("Below this temperature, the object will take no damage from fire or heat and" +
+	         " won't ignite.")]
 	public float HeatResistance = 100;
+
+	[SyncVar(hook = nameof(SyncOnFire))]
+	private bool onFire = false;
+	private Burning burningOverlay;
+
+	//NOTE: If we want burning objects to trigger hotspots, uncomment these.
+//	[Tooltip("Temperature this object burns at when on fire. No effect unless this" +
+//	         " object is flammable.")]
+//	public float BurningTemperature = Reactions.FIRE_MINIMUM_TEMPERATURE_TO_EXIST;
+//	[Tooltip("Volume of the hotspot this object creates when on fire. No effect unless this" +
+//	         " object is flammable")]
+//	public float BurningVolume = 0.005f;
+
+	//TODO: Should probably replace the burning effect with a particle effect?
+	private static GameObject SMALL_BURNING_PREFAB;
+	private static GameObject LARGE_BURNING_PREFAB;
+
+
+	// damage incurred each tick while an object is on fire
+	private static float BURNING_DAMAGE = 5;
+
+	private static readonly float BURN_RATE = 1f;
+	private float timeSinceLastBurn;
 
 	private float integrity = 100f;
 	private bool destroyed = false;
 	private DamageType lastDamageType;
 	private RegisterTile registerTile;
-	private ObjectBehaviour objectBehaviour;
+
+	//whether this is a large object (meaning we would use the large ash pile and large burning sprite)
+	private bool isLarge;
 
 	private void Awake()
 	{
+		if (SMALL_BURNING_PREFAB == null)
+		{
+			SMALL_BURNING_PREFAB = Resources.Load<GameObject>("SmallBurning");
+			LARGE_BURNING_PREFAB = Resources.Load<GameObject>("LargeBurning");
+		}
 		registerTile = GetComponent<RegisterTile>();
-		objectBehaviour = GetComponent<ObjectBehaviour>();
+		//this is just a guess - large items can't be picked up
+		isLarge = GetComponent<Pickupable>() == null;
+		if (Resistances.Flammable)
+		{
+			if (burningOverlay == false)
+			{
+				burningOverlay = GameObject.Instantiate(isLarge ? LARGE_BURNING_PREFAB : SMALL_BURNING_PREFAB, transform)
+					.GetComponent<Burning>();
+			}
+
+			burningOverlay.enabled = true;
+			burningOverlay.StopBurning();
+		}
+	}
+
+	public override void OnStartClient()
+	{
+		SyncOnFire(onFire);
 	}
 
 	/// <summary>
@@ -66,14 +127,21 @@ public class Integrity : MonoBehaviour, IFireExposable, IRightClickable
 	/// </summary>
 	/// <param name="damage"></param>
 	/// <param name="damageType"></param>
+	[Server]
 	public void ApplyDamage(float damage, AttackType attackType, DamageType damageType)
 	{
 		//already destroyed, don't apply damage
-		if (destroyed) return;
+		if (destroyed || Resistances.Indestructable) return;
+
+		if (Resistances.FireProof && attackType == AttackType.Fire) return;
 
 		damage = Armor.GetDamage(damage, attackType);
 		if (damage > 0)
 		{
+			if ((attackType == AttackType.Fire || damageType == DamageType.Burn) && !onFire && !destroyed && Resistances.Flammable)
+			{
+				SyncOnFire(true);
+			}
 			integrity -= damage;
 			lastDamageType = damageType;
 			CheckDestruction();
@@ -81,13 +149,53 @@ public class Integrity : MonoBehaviour, IFireExposable, IRightClickable
 		}
 	}
 
+	private void Update()
+	{
+		if (onFire && isServer)
+		{
+			timeSinceLastBurn += Time.deltaTime;
+			if (timeSinceLastBurn > BURN_RATE)
+			{
+				ApplyDamage(BURNING_DAMAGE, AttackType.Fire, DamageType.Burn);
+				timeSinceLastBurn = 0;
 
+				//NOTE: If we want burning objects to trigger hotspots, uncomment this.
+				//Might be performance draining.
+				//registerTile.Matrix.ReactionManager.ExposeHotspotWorldPosition(gameObject.TileWorldPosition(),
+				//	BurningTemperature, BurningVolume);
+			}
+		}
+	}
+
+	private void SyncOnFire(bool onFire)
+	{
+		//do nothing if this can't burn
+		if (!Resistances.Flammable) return;
+
+		this.onFire = onFire;
+		if (this.onFire)
+		{
+			burningOverlay.Burn();
+		}
+		else if (!this.onFire)
+		{
+			burningOverlay.StopBurning();
+		}
+	}
+
+	[Server]
 	private void CheckDestruction()
 	{
 		if (!destroyed && integrity <= 0)
 		{
 			var destructInfo = new DestructionInfo(lastDamageType);
 			OnWillDestroyServer.Invoke(destructInfo);
+
+			if (onFire)
+			{
+				//ensure we stop burning
+				SyncOnFire(false);
+			}
 
 			if (destructInfo.DamageType == DamageType.Burn)
 			{
@@ -109,14 +217,17 @@ public class Integrity : MonoBehaviour, IFireExposable, IRightClickable
 		}
 	}
 
+	[Server]
 	private void DefaultBurnUp(DestructionInfo info)
 	{
 		//just a guess - objects which can be picked up should have a smaller amount of ash
-		EffectsFactory.Instance.Ash(registerTile.WorldPosition.To2Int(), GetComponent<Pickupable>() == null);
+		EffectsFactory.Instance.Ash(registerTile.WorldPosition.To2Int(), isLarge);
 		ChatRelay.Instance.AddToChatLogServer(ChatEvent.Local($"{name} burnt to ash.", gameObject.TileWorldPosition()));
+		Logger.LogTraceFormat("{0} burning up, onfire is {1} (burningObject enabled {2})", Category.Health, name, this.onFire, burningOverlay?.enabled);
 		PoolManager.PoolNetworkDestroy(gameObject);
 	}
 
+	[Server]
 	private void DefaultDestroy(DestructionInfo info)
 	{
 		if (info.DamageType == DamageType.Brute)
@@ -132,6 +243,7 @@ public class Integrity : MonoBehaviour, IFireExposable, IRightClickable
 		}
 	}
 
+	[Server]
 	public void OnExposed(FireExposure exposure)
 	{
 		if (exposure.Temperature > HeatResistance)

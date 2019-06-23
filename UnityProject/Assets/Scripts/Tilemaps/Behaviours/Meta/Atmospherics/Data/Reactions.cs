@@ -7,6 +7,7 @@ namespace Atmospherics
 		public const float T0C = 273.15f;
 		public const float PLASMA_MINIMUM_BURN_TEMPERATURE = T0C + 100;
 		public const float FIRE_MINIMUM_TEMPERATURE_TO_SPREAD = T0C + 150;
+		public const float FIRE_MINIMUM_TEMPERATURE_TO_EXIST = T0C + 100;
 		public const float PLASMA_UPPER_TEMPERATURE = T0C + 1370;
 		public const float OXYGEN_BURN_RATE_BASE = 1.4f;
 		public const float PLASMA_OXYGEN_FULLBURN = 10;

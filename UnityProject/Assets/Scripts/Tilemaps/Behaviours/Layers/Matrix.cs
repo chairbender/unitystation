@@ -18,11 +18,14 @@ public class Matrix : MonoBehaviour
 	private TileList ClientObjects => clientObjects ?? (clientObjects = ((ObjectLayer) MetaTileMap.Layers[LayerType.Objects]).ClientObjects);
 	private Vector3Int initialOffset;
 	public Vector3Int InitialOffset => initialOffset;
+	private ReactionManager reactionManager;
+	public ReactionManager ReactionManager => reactionManager;
 	public int Id { get; set; } = 0;
 
 	private void Awake()
 	{
 		initialOffset = Vector3Int.CeilToInt(gameObject.transform.position);
+		reactionManager = GetComponent<ReactionManager>();
 	}
 
 	public bool IsPassableAt(Vector3Int position, bool isServer)

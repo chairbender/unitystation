@@ -114,6 +114,13 @@ public class Gun : NBAimApplyInteractable, IInteractable<HandActivate>, IInterac
 	/// </summary>
 	private System.Random magSyncedRNG;
 
+	private RegisterTile registerTile;
+
+	private void Awake()
+	{
+		registerTile = GetComponent<RegisterTile>();
+	}
+
 	private void Start()
 	{
 		//init weapon with missing settings
@@ -484,7 +491,7 @@ public class Gun : NBAimApplyInteractable, IInteractable<HandActivate>, IInterac
 			DisplayShot(nextShot.shooter, nextShot.finalDirection, nextShot.damageZone, nextShot.isSuicide);
 
 			//trigger a hotspot caused by gun firing
-			GetComponentInParent<ReactionManager>().ExposeHotspotWorldPosition(nextShot.shooter.TileWorldPosition(), 3200, 0.005f);
+			registerTile.Matrix.ReactionManager.ExposeHotspotWorldPosition(nextShot.shooter.TileWorldPosition(), 3200, 0.005f);
 
 			//tell all the clients to display the shot
 			ShootMessage.SendToAll(nextShot.finalDirection, nextShot.damageZone, nextShot.shooter, this.gameObject, nextShot.isSuicide);
