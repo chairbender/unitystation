@@ -99,7 +99,6 @@ GameObject:
   - component: {fileID: 114570445175126256}
   - component: {fileID: 114598501499011006}
   - component: {fileID: 114920395885099620}
-  - component: {fileID: 114397562252112310}
   m_Layer: 11
   m_Name: Closet_Locker_RD
   m_TagString: Untagged
@@ -270,6 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc4af3ee3e2140f79050f19644af5e8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layer: {fileID: 0}
   ObjectType: 1
   AtmosPassable: 1
   Passable: 0
@@ -323,18 +323,6 @@ MonoBehaviour:
     Magic: 0
     Bio: 0
   HeatResistance: 100
---- !u!114 &114397562252112310
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1615565101381030}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f68d36ed5e334f99b82dc3801757e89, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1660108514398418
 GameObject:
   m_ObjectHideFlags: 0

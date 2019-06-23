@@ -39,6 +39,16 @@ public class ClosetControl : NBHandApplyInteractable, IRightClickable
 		registerTile = GetComponent<RegisterCloset>();
 		pushPull = GetComponent<PushPull>();
 		objectBehaviour = GetComponent<ObjectBehaviour>();
+		GetComponent<Integrity>().OnWillDestroyServer.AddListener(OnWillDestroyServer);
+	}
+
+	private void OnWillDestroyServer(DestructionInfo arg0)
+	{
+		//force it open
+		SetIsLocked(false);
+		SetIsClosed(false);
+
+		ItemFactory.SpawnMetal(2, gameObject.TileWorldPosition(), transform.parent);
 	}
 
 	public override void OnStartServer()

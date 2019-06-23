@@ -150,6 +150,4 @@ public class InteractableTiles : MonoBehaviour, IInteractable<PositionalHandAppl
 			}
 		}
 	}
-
-
 }

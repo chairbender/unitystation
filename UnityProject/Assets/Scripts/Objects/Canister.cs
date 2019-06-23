@@ -23,6 +23,25 @@ public class Canister : NBHandApplyInteractable
 		registerTile = GetComponent<RegisterTile>();
 		objectBehaviour = GetComponent<ObjectBehaviour>();
 		SetDefaultIntegrity();
+		GetComponent<Integrity>().OnWillDestroyServer.AddListener(OnWillDestroyServer);
+	}
+
+	private void OnWillDestroyServer(DestructionInfo arg0)
+	{
+		//ensure we disconnect
+		Disconnect();
+	}
+
+	private void Disconnect()
+	{
+		if (isConnected)
+		{
+			connector.DisconnectCanister();
+			isConnected = false;
+			connectorRenderer.sprite = null;
+			SetConnectedSprite(null);
+			objectBehaviour.isNotPushable = false;
+		}
 	}
 
 	private void SetDefaultIntegrity()
@@ -62,11 +81,7 @@ public class Canister : NBHandApplyInteractable
 			if(isConnected)
 			{
 				SoundManager.PlayNetworkedAtPos("Wrench", registerTile.WorldPositionServer, 1f);
-				connector.DisconnectCanister();
-				isConnected = false;
-				connectorRenderer.sprite = null;
-				SetConnectedSprite(null);
-				objectBehaviour.isNotPushable = false;
+				Disconnect();
 				return;
 			}
 			else

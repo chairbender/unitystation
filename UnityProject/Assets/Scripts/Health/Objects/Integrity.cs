@@ -14,7 +14,7 @@ using UnityEngine.Events;
 [RequireComponent(typeof(CustomNetTransform))]
 [RequireComponent(typeof(RegisterTile))]
 [RequireComponent(typeof(Meleeable))]
-public class Integrity : MonoBehaviour, IFireExposable
+public class Integrity : MonoBehaviour, IFireExposable, IRightClickable
 {
 
 	/// <summary>
@@ -68,6 +68,9 @@ public class Integrity : MonoBehaviour, IFireExposable
 	/// <param name="damageType"></param>
 	public void ApplyDamage(float damage, AttackType attackType, DamageType damageType)
 	{
+		//already destroyed, don't apply damage
+		if (destroyed) return;
+
 		damage = Armor.GetDamage(damage, attackType);
 		if (damage > 0)
 		{
@@ -133,8 +136,24 @@ public class Integrity : MonoBehaviour, IFireExposable
 	{
 		if (exposure.Temperature > HeatResistance)
 		{
-			ApplyDamage(Mathf.Clamp(0.02f * exposure.Temperature, 0f, 20f), AttackType.Fire, DamageType.Burn);
+			ApplyDamage(exposure.StandardDamage(), AttackType.Fire, DamageType.Burn);
 		}
+	}
+
+	public RightClickableResult GenerateRightClickOptions()
+	{
+		return RightClickableResult.Create()
+			.AddAdminElement("Smash", AdminSmash)
+			.AddAdminElement("Hotspot", AdminMakeHotspot);
+	}
+
+	private void AdminSmash()
+	{
+		PlayerManager.PlayerScript.playerNetworkActions.CmdAdminSmash(gameObject);
+	}
+	private void AdminMakeHotspot()
+	{
+		PlayerManager.PlayerScript.playerNetworkActions.CmdAdminMakeHotspot(gameObject);
 	}
 }
 

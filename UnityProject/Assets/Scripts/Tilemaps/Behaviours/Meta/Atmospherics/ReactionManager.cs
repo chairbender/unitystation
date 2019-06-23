@@ -166,7 +166,10 @@ public class ReactionManager : MonoBehaviour
 	{
 
 		var isSideExposure = hotspotPosition != atLocalPosition;
-		var exposure = FireExposure.FromMetaDataNode(hotspots[hotspotPosition], atLocalPosition.To2Int());
+		//calculate world position
+		var hotspotWorldPosition = MatrixManager.LocalToWorldInt(hotspotPosition, MatrixManager.Get(matrix));
+		var atWorldPosition = MatrixManager.LocalToWorldInt(atLocalPosition, MatrixManager.Get(matrix));
+		var exposure = FireExposure.FromMetaDataNode(hotspots[hotspotPosition], hotspotWorldPosition.To2Int(), atLocalPosition.To2Int(), atWorldPosition.To2Int());
 		if (isSideExposure)
 		{
 			//side exposure logic

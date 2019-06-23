@@ -252,6 +252,7 @@ public class MouseInputController : MonoBehaviour
 	//return the Gun component if there is a loaded gun in active hand, otherwise null.
 	private Gun GetLoadedGunInActiveHand()
 	{
+		if (UIManager.Instance == null || UIManager.Hands == null || UIManager.Hands.CurrentSlot == null) return null;
 		var item = UIManager.Hands.CurrentSlot.Item;
 		if (item != null)
 		{

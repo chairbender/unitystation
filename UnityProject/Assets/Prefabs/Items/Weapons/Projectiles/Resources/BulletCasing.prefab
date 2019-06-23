@@ -90,15 +90,12 @@ GameObject:
   - component: {fileID: 4394990100975006}
   - component: {fileID: 114853633842943406}
   - component: {fileID: 114660134951546780}
-  - component: {fileID: 114082070148185668}
   - component: {fileID: 114017365346665226}
   - component: {fileID: 114351302608874486}
   - component: {fileID: 114808326139610746}
   - component: {fileID: 114088795432989764}
   - component: {fileID: 61429855537186034}
   - component: {fileID: 114888052628661728}
-  - component: {fileID: 114155738265243488}
-  - component: {fileID: 114258522229270750}
   m_Layer: 10
   m_Name: BulletCasing
   m_TagString: Untagged
@@ -167,23 +164,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteObj: {fileID: 1053209255413720}
---- !u!114 &114082070148185668
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1502805363387812}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e1ce0dbeeeb473dae66fb3610953c99, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OnDropServer:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &114017365346665226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,6 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 322493e979844b028b86387c7a0aa50c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layer: {fileID: 0}
   ObjectType: 0
   crossed:
     m_PersistentCalls:
@@ -298,39 +279,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteMatrixRotationBehavior: 1
---- !u!114 &114155738265243488
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1502805363387812}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f68d36ed5e334f99b82dc3801757e89, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &114258522229270750
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1502805363387812}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7dfb85a893964a9f8ed7befb319d27ec, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Armor:
-    Melee: 0
-    Bullet: 0
-    Laser: 0
-    Energy: 0
-    Bomb: 0
-    Rad: 0
-    Fire: 0
-    Acid: 0
-    Magic: 0
-    Bio: 0
-  HeatResistance: 100

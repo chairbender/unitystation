@@ -6,7 +6,6 @@ public class EffectsFactory : NetworkBehaviour
 	public static EffectsFactory Instance;
 
 	private GameObject fireTile { get; set; }
-	private GameObject scorchMarksTile { get; set; }
 
 	private GameObject smallBloodTile;
 	private GameObject mediumBloodTile;
@@ -31,7 +30,6 @@ public class EffectsFactory : NetworkBehaviour
 	{
 		//Do init stuff
 		fireTile = Resources.Load("FireTile") as GameObject;
-		scorchMarksTile = Resources.Load("ScorchMarks") as GameObject;
 		smallBloodTile = Resources.Load("SmallBloodSplat") as GameObject;
 		mediumBloodTile = Resources.Load("MediumBloodSplat") as GameObject;
 		largeBloodTile = Resources.Load("LargeBloodSplat") as GameObject;

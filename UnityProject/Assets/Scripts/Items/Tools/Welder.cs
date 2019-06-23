@@ -154,7 +154,7 @@ public class Welder : NBHandActivateInteractable
 
 	void CheckHeldByPlayer()
 	{
-		if (UIManager.Hands.CurrentSlot.Item == gameObject)
+		if (UIManager.Instance != null && UIManager.Hands != null && UIManager.Hands.CurrentSlot != null && UIManager.Hands.CurrentSlot.Item == gameObject)
 		{
 			UIManager.Hands.CurrentSlot.SetSecondaryImage(flameRenderer.sprite);
 		}
@@ -202,13 +202,13 @@ public class Welder : NBHandActivateInteractable
 					UpdateState(false);
 				}
 
-				Vector3Int position = transform.localPosition.RoundToInt();
+				Vector2Int position = gameObject.TileWorldPosition();
 				if (heldByPlayer != null)
 				{
-					position = heldByPlayer.transform.localPosition.RoundToInt();
+					position = heldByPlayer.gameObject.TileWorldPosition();
 				}
 
-				reactionManager.ExposeHotspotWorldPosition(gameObject.TileWorldPosition(), 700, 0.005f);
+				reactionManager.ExposeHotspotWorldPosition(position, 700, 0.005f);
 			}
 
 			yield return WaitFor.Seconds(.1f);

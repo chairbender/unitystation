@@ -25,11 +25,8 @@ namespace Objects
 		public float Temperature;
 		public float[] Gases = new float[Gas.Count];
 
-		private GameObject metalPrefab;
-
 		public override void OnStartServer()
 		{
-			metalPrefab = Resources.Load<GameObject>("Metal");
 			UpdateGasMix();
 			GetComponent<Integrity>().OnWillDestroyServer.AddListener(OnWillDestroyServer);
 
@@ -48,11 +45,7 @@ namespace Objects
 			metaDataLayer.UpdateSystemsAt(position);
 			ChatRelay.Instance.AddToChatLogServer(ChatEvent.Local($"{name} exploded!", gameObject.TileWorldPosition()));
 
-			//spawn a stack of metal
-			for (int i = 0; i < 4; i++)
-			{
-				PoolManager.PoolNetworkInstantiate(metalPrefab, tileWorldPosition, transform.parent, Quaternion.Euler(0,0,UnityEngine.Random.Range(0, 360)));
-			}
+			ItemFactory.SpawnMetal(2, tileWorldPosition.To2Int(), transform.parent);
 
 			ExplosionUtils.PlaySoundAndShake(tileWorldPosition, shakeIntensity, (int) shakeDistance);
 		}
