@@ -5,6 +5,7 @@ using Atmospherics;
 using Objects;
 using Tilemaps.Behaviours.Meta;
 using UnityEngine;
+using UnityEngine.Profiling;
 using Random = UnityEngine.Random;
 
 /// <summary>
@@ -173,9 +174,11 @@ public class ReactionManager : MonoBehaviour
 		if (isSideExposure)
 		{
 			//side exposure logic
-
 			//already exposed by a different hotspot
-			if (hotspots.ContainsKey(atLocalPosition)) return;
+			if (hotspots.ContainsKey(atLocalPosition))
+			{
+				return;
+			}
 
 			var metadata = metaDataLayer.Get(atLocalPosition);
 			if (!metadata.IsOccupied)
@@ -186,15 +189,14 @@ public class ReactionManager : MonoBehaviour
 
 			//only expose to atmos impassable objects, since those are the things the flames would
 			//actually brush up against
-			var regTiles = matrix.Get<RegisterTile>(atLocalPosition, true);
-			foreach (var regTile in regTiles)
-			{
-				if (!regTile.IsAtmosPassable(exposure.HotspotLocalPosition.To3Int(), true))
+			matrix.DoAt<RegisterTile>(atLocalPosition, true,
+				rt =>
 				{
-					var exposable = regTile.GetComponent<IFireExposable>();
-					exposable.OnExposed(exposure);
-				}
-			}
+					if (!rt.IsAtmosPassable(exposure.HotspotLocalPosition.To3Int(), true))
+					{
+						rt.GetComponent<IFireExposable>().OnExposed(exposure);
+					}
+				});
 
 			//expose the tiles there
 			foreach (var tilemapDamage in tilemapDamages)
@@ -205,19 +207,21 @@ public class ReactionManager : MonoBehaviour
 		else
 		{
 			//direct exposure logic
-			var fireExposables = matrix.Get<IFireExposable>(atLocalPosition, true);
-			foreach (var exposable in fireExposables)
-			{
-				exposable.OnExposed(exposure);
-			}
+			Profiler.BeginSample("ObjectExposure");
+			matrix.DoAt<IFireExposable>(atLocalPosition, true,
+				fe => fe.OnExposed(exposure));
+			Profiler.EndSample();
 			//expose the tiles
+			Profiler.BeginSample("TilemapExposure");
 			foreach (var tilemapDamage in tilemapDamages)
 			{
 				tilemapDamage.OnExposed(exposure);
 			}
+			Profiler.EndSample();
 		}
 
 	}
+
 
 	public void AddWindEvent( MetaDataNode node, Vector2Int windDirection, float pressureDifference )
 	{

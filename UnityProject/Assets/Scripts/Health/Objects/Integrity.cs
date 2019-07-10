@@ -6,6 +6,7 @@ using Atmospherics;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using UnityEngine.Profiling;
 using Object = System.Object;
 
 /// <summary>
@@ -171,6 +172,7 @@ public class Integrity : NetworkBehaviour, IFireExposable, IRightClickable
 	{
 		if (!destroyed && integrity <= 0)
 		{
+			Profiler.BeginSample("ObjectDestruction");
 			var destructInfo = new DestructionInfo(lastDamageType);
 			OnWillDestroyServer.Invoke(destructInfo);
 
@@ -197,7 +199,9 @@ public class Integrity : NetworkBehaviour, IFireExposable, IRightClickable
 			}
 
 			destroyed = true;
+			Profiler.EndSample();
 		}
+
 	}
 
 	[Server]
@@ -229,10 +233,12 @@ public class Integrity : NetworkBehaviour, IFireExposable, IRightClickable
 	[Server]
 	public void OnExposed(FireExposure exposure)
 	{
+		Profiler.BeginSample("OnObjectExposed");
 		if (exposure.Temperature > HeatResistance)
 		{
 			ApplyDamage(exposure.StandardDamage(), AttackType.Fire, DamageType.Burn);
 		}
+		Profiler.EndSample();
 	}
 
 	public RightClickableResult GenerateRightClickOptions()

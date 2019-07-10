@@ -139,6 +139,31 @@ public class Matrix : MonoBehaviour
 		return filtered;
 	}
 
+	/// <summary>
+	/// Like GetAt, but just invokes a function one each object at that position, to avoid the GC
+	/// overhead of creating a list to return
+	/// </summary>
+	/// <param name="localPosition"></param>
+	/// <param name="isServer"></param>
+	/// <param name="toDo"></param>
+	/// <typeparam name="T"></typeparam>
+	public void DoAt<T>(Vector3Int localPosition, bool isServer, Action<T> toDo)
+	{
+		if ( !(isServer ? ServerObjects : ClientObjects).HasObjects( localPosition ) )
+		{
+			return;
+		}
+
+		foreach ( var registerTile in (isServer ? ServerObjects : ClientObjects).Get(localPosition))
+		{
+			var comp = registerTile.GetComponent<T>();
+			if (comp != null)
+			{
+				toDo.Invoke(comp);
+			}
+		}
+	}
+
 	public T GetFirst<T>(Vector3Int position, bool isServer) where T : MonoBehaviour
 	{
 		//This has been checked in the profiler. 0% CPU and 0kb garbage, so should be fine
