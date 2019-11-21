@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
+[RequireComponent(typeof(Stackable))]
 public class SolidPlasma : NetworkBehaviour
 {
 	public float Amount { get; private set; } = 10f;

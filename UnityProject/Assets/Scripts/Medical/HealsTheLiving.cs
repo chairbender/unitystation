@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
@@ -6,16 +7,15 @@ using Mirror;
 /// <summary>
 /// Component which allows this object to be applied to a living thing, healing it.
 /// </summary>
-public class HealsTheLiving : NetworkBehaviour, ICheckedInteractable<HandApply>, IServerSpawn
+[RequireComponent(typeof(Stackable))]
+public class HealsTheLiving : MonoBehaviour, ICheckedInteractable<HandApply>
 {
 	public DamageType healType;
-	//total number of times this can be used
-	public int uses = 6;  //TODO: move into some stack component (metal sheets, ores, etc)
-	private int timesUsed;
+	private Stackable stackable;
 
-	public void OnSpawnServer(SpawnInfo info)
+	private void Awake()
 	{
-		timesUsed = 0;
+		stackable = GetComponent<Stackable>();
 	}
 
 	public bool WillInteract(HandApply interaction, NetworkSide side)
@@ -51,12 +51,7 @@ public class HealsTheLiving : NetworkBehaviour, ICheckedInteractable<HandApply>,
 	private void ApplyHeal(BodyPartBehaviour targetBodyPart)
 	{
 		targetBodyPart.HealDamage(40, healType);
-		timesUsed++;
-		Logger.LogTraceFormat("{0} uses left.", Category.Health, uses - timesUsed);
-		if(uses == timesUsed)
-		{
-			Despawn.ServerSingle(gameObject);
-		}
+		stackable.ServerConsume(1);
 	}
 
 	[Server]
