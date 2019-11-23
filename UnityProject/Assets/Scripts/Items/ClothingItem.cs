@@ -122,6 +122,13 @@ public class ClothingItem : MonoBehaviour
 		PushTexture();
 	}
 
+	public void RefreshFromClothing(ClothingV2 clothing)
+	{
+		spriteHandler.Infos = clothing.SpriteInfo;
+		spriteHandler.ChangeSprite(clothing.SpriteInfoState);
+		PushTexture();
+	}
+
 	private void UpdateReferenceOffset()
 	{
 		if (currentDirection == Orientation.Down)

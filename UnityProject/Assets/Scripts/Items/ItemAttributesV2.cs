@@ -20,7 +20,7 @@ using Random = System.Random;
 [RequireComponent(typeof(ObjectBehaviour))]
 [RequireComponent(typeof(RegisterItem))]
 [RequireComponent(typeof(CustomNetTransform))]
-public class ItemAttributesV2 : MonoBehaviour, IRightClickable, IServerSpawn
+public class ItemAttributesV2 : MonoBehaviour, IRightClickable
 {
 	[Tooltip("Display name of this item.")]
 	[SerializeField]
@@ -131,7 +131,7 @@ public class ItemAttributesV2 : MonoBehaviour, IRightClickable, IServerSpawn
 		traits.Remove(toRemove);
 	}
 
-	public void SetUpFromClothingData(EquippedData equippedData, ItemAttributesData itemAttributes)
+	public void SetUpFromClothingData(EquippedData equippedData)
 	{
 		spriteDataHandler.Infos = new SpriteData();
 		spriteDataHandler.Infos.List.Add(StaticSpriteHandler.CompleteSpriteSetup(equippedData.InHandsLeft));
@@ -139,34 +139,34 @@ public class ItemAttributesV2 : MonoBehaviour, IRightClickable, IServerSpawn
 		inventoryIcon.Infos = new SpriteData();
 		inventoryIcon.Infos.List.Add(StaticSpriteHandler.CompleteSpriteSetup(equippedData.ItemIcon));
 		inventoryIcon.PushTexture();
-		AttributesFromCD(itemAttributes);
 	}
 
+#if UNITY_EDITOR
 	public void AttributesFromCD(ItemAttributesData ItemAttributes)
 	{
-		itemName = ItemAttributes.itemName);
-		SyncItemDescription(ItemAttributes.itemDescription);
+		itemName = ItemAttributes.itemName;
+		itemDescription = ItemAttributes.itemDescription;
 		var trait = TypeToTrait(ItemAttributes.itemType);
 		if (trait != null)
 		{
 			traits.Add(trait);
 		}
 		initialSize = ItemAttributes.size;
-		spriteType = ItemAttributes.spriteType;
-		CanConnectToTank = ItemAttributes.CanConnectToTank;
+		canConnectToTank = ItemAttributes.CanConnectToTank;
 		hitDamage = ItemAttributes.hitDamage;
 		damageType = ItemAttributes.damageType;
 		throwDamage = ItemAttributes.throwDamage;
 		throwSpeed = ItemAttributes.throwSpeed;
 		throwRange = ItemAttributes.throwRange;
 		hitSound = ItemAttributes.hitSound;
-		attackVerb = ItemAttributes.attackVerb;
+		attackVerbs = ItemAttributes.attackVerb;
 		IsEVACapable = ItemAttributes.IsEVACapable;
 	}
 	private ItemTrait TypeToTrait(ItemType itemType)
 	{
 		return ItemTypeToTraitMapping.Instance.GetTrait(itemType);
 	}
+#endif
 
 	private static string GetMasterTypeHandsString(SpriteType masterType)
 	{
