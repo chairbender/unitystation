@@ -22,7 +22,7 @@ public class RolledPoster : MonoBehaviour, ICheckedInteractable<PositionalHandAp
 		}
 
 		sprite = GetComponentInChildren<SpriteRenderer>();
-		var attributes = GetComponent<ItemAttributes>();
+		var attributes = GetComponent<IItemAttributes>();
 		var poster = Globals.Posters[posterVariant.ToString()];
 		string posterName;
 		string desc;
@@ -49,8 +49,8 @@ public class RolledPoster : MonoBehaviour, ICheckedInteractable<PositionalHandAp
 			icon = poster.Type == PosterBehaviour.PosterType.Contraband ? contrabandSprite : legitSprite;
 		}
 
-		attributes.SetItemName(posterName);
-		attributes.SetItemDescription(desc);
+		attributes.ServerSetItemName(posterName);
+		attributes.ServerSetItemDescription(desc);
 		sprite.sprite = icon;
 	}
 

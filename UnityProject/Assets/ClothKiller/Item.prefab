@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4527534762131918}
   - component: {fileID: 61728060443877980}
   - component: {fileID: 114341119007412586}
-  - component: {fileID: 114099586909895544}
+  - component: {fileID: 499351249353511896}
   - component: {fileID: 114734890905785284}
   - component: {fileID: 114182420558184634}
   - component: {fileID: 114776788309089574}
@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 114738972662350094}
   m_Layer: 10
   m_Name: Item
-  m_TagString: Untagged
+  m_TagString: Abstract
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -83,7 +83,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   IsFixedMatrix: 0
---- !u!114 &114099586909895544
+--- !u!114 &499351249353511896
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -92,26 +92,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 1011433845357754}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c2aa599081d4bc09565dfcb42993bf7, type: 3}
+  m_Script: {fileID: 11500000, guid: 99794c150ee14b21a829d6ed54d27a60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  spriteDataHandler: {fileID: 114077084986960180}
-  InventoryIcon: {fileID: 2620878637528213898}
-  itemName: 
-  itemDescription: 
+  initialName: Unnamed
+  initialDescription: Oops, someone spawned something they shouldn't!
   initialTraits: []
-  size: 1
-  spriteType: 1
-  CanConnectToTank: 0
+  initialSize: 1
   hitDamage: 0
   damageType: 0
   throwDamage: 0
   throwSpeed: 2
   throwRange: 7
   hitSound: GenericHit
-  attackVerb: []
+  canConnectToTank: 0
+  isEVACapable: 0
+  attackVerbs: []
 --- !u!114 &114734890905785284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -265,7 +263,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4911511444418374}
   - component: {fileID: 212340400423555046}
-  - component: {fileID: 2620878637528213898}
   m_Layer: 10
   m_Name: Sprite
   m_TagString: Untagged
@@ -336,26 +333,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2620878637528213898
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1344926539164060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db025f3627a11af4fb670ccd1e2188ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Infos:
-    spriteIndex: 0
-    VariantIndex: 0
-    AID: 0
-    Serialized: []
-  spriteList: []
-  spriteRenderer: {fileID: 212340400423555046}
-  spriteIndex: 0
-  VariantIndex: 0
-  SynchroniseVariant: 1
-  test: 0

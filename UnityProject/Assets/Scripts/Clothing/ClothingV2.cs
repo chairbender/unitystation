@@ -9,7 +9,7 @@ using Mirror;
 /// New and improved, removes need for UniCloth type stuff, works
 /// well with using prefab variants.
 /// </summary>
-public class ClothingV2 : MonoBehaviour
+public class ClothingV2 : MonoBehaviour, IClothing
 {
 
 	//TODO: This can probably be migrated to this component rather than using a separate SO, since
@@ -48,9 +48,21 @@ public class ClothingV2 : MonoBehaviour
 	/// </summary>
 	public int SpriteInfoState => variantStore.ContainsKey(variantType) ? variantStore[variantType] : 0;
 
+	/// <summary>
+	/// SpriteDataHandler on this object
+	/// </summary>
+	public SpriteDataHandler SpriteDataHandler => spriteDataHandler;
+
+
+	private SpriteDataHandler spriteDataHandler;
+	private SpriteHandler inventoryIcon;
+
+
 	private void Awake()
 	{
 		pickupable = GetComponent<Pickupable>();
+		spriteDataHandler = GetComponentInChildren<SpriteDataHandler>();
+		inventoryIcon = GetComponentInChildren<SpriteHandler>();
 		TryInit();
 	}
 
@@ -61,7 +73,7 @@ public class ClothingV2 : MonoBehaviour
 		{
 			var item = GetComponent<ItemAttributesV2>();
 			spriteInfo = SetUpSheetForClothingData(clothingData);
-			item.SetUpFromClothingData(clothingData.Base);
+			SetUpFromClothingData(clothingData.Base);
 
 			switch (variantType)
 			{
@@ -70,16 +82,16 @@ public class ClothingV2 : MonoBehaviour
 					{
 						if (!(clothingData.Variants.Count >= variantIndex))
 						{
-							item.SetUpFromClothingData(clothingData.Variants[variantIndex]);
+							SetUpFromClothingData(clothingData.Variants[variantIndex]);
 						}
 					}
 
 					break;
 				case ClothingVariantType.Skirt:
-					item.SetUpFromClothingData(clothingData.DressVariant);
+					SetUpFromClothingData(clothingData.DressVariant);
 					break;
 				case ClothingVariantType.Tucked:
-					item.SetUpFromClothingData(clothingData.Base_Adjusted);
+					SetUpFromClothingData(clothingData.Base_Adjusted);
 					break;
 			}
 		}
@@ -87,17 +99,29 @@ public class ClothingV2 : MonoBehaviour
 		{
 			var Item = GetComponent<ItemAttributesV2>();
 			this.spriteInfo = StaticSpriteHandler.SetupSingleSprite(containerData.Sprites.Equipped);
-			Item.SetUpFromClothingData(containerData.Sprites);
+			SetUpFromClothingData(containerData.Sprites);
 		}
 		else if (clothData is HeadsetData headsetData)
 		{
 			var Item = GetComponent<ItemAttributesV2>();
 			var Headset = GetComponent<Headset>();
 			this.spriteInfo = StaticSpriteHandler.SetupSingleSprite(headsetData.Sprites.Equipped);
-			Item.SetUpFromClothingData(headsetData.Sprites);
+			SetUpFromClothingData(headsetData.Sprites);
 			Headset.EncryptionKey = headsetData.Key.EncryptionKey;
 		}
 	}
+
+	private void SetUpFromClothingData(EquippedData equippedData)
+	{
+		spriteDataHandler.Infos = new SpriteData();
+		spriteDataHandler.Infos.List.Add(StaticSpriteHandler.CompleteSpriteSetup(equippedData.InHandsLeft));
+		spriteDataHandler.Infos.List.Add(StaticSpriteHandler.CompleteSpriteSetup(equippedData.InHandsRight));
+		inventoryIcon.Infos = new SpriteData();
+		inventoryIcon.Infos.List.Add(StaticSpriteHandler.CompleteSpriteSetup(equippedData.ItemIcon));
+		inventoryIcon.PushTexture();
+	}
+
+
 
 	private SpriteData SetUpSheetForClothingData(ClothingData clothingData)
 	{
@@ -134,7 +158,8 @@ public class ClothingV2 : MonoBehaviour
 		return (SpriteInfos);
 	}
 
-	public void SetClothingItem(ClothingItem clothingItem)
+
+	public void LinkClothingItem(ClothingItem clothingItem)
 	{
 		this.clothingItem = clothingItem;
 		RefreshClothingItem();
