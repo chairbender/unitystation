@@ -66,7 +66,7 @@ public class ClothingV2 : MonoBehaviour, IClothing
 		TryInit();
 	}
 
-	//set up the sprites of this instance using the cloth data
+	//set up the sprites / config of this instance using the cloth data
 	private void TryInit()
 	{
 		if (clothData is ClothingData clothingData)
