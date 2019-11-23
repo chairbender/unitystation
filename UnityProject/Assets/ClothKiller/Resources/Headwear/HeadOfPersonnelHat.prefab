@@ -82,6 +82,41 @@ PrefabInstance:
       propertyPath: initialDescription
       value: The symbol of true bureaucratic micromanagement.
       objectReference: {fileID: 0}
+    - target: {fileID: 2295559571915120171, guid: a7a048f6c330048e9a2358fb6f71d385,
+        type: 3}
+      propertyPath: Armor.Melee
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 2295559571915120171, guid: a7a048f6c330048e9a2358fb6f71d385,
+        type: 3}
+      propertyPath: Armor.Bullet
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 2295559571915120171, guid: a7a048f6c330048e9a2358fb6f71d385,
+        type: 3}
+      propertyPath: Armor.Laser
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 2295559571915120171, guid: a7a048f6c330048e9a2358fb6f71d385,
+        type: 3}
+      propertyPath: Armor.Energy
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2295559571915120171, guid: a7a048f6c330048e9a2358fb6f71d385,
+        type: 3}
+      propertyPath: Armor.Bomb
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 2295559571915120171, guid: a7a048f6c330048e9a2358fb6f71d385,
+        type: 3}
+      propertyPath: Armor.Fire
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 2295559571915120171, guid: a7a048f6c330048e9a2358fb6f71d385,
+        type: 3}
+      propertyPath: Armor.Acid
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 2293722870276993643, guid: a7a048f6c330048e9a2358fb6f71d385,
         type: 3}
       propertyPath: m_AssetId

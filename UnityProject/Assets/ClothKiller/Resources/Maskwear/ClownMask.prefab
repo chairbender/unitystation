@@ -12,6 +12,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ClownMask
       objectReference: {fileID: 0}
+    - target: {fileID: 7600017545650087553, guid: 05a135eab68164d34bb02b82fff3cde0,
+        type: 3}
+      propertyPath: m_TagString
+      value: Clothing
+      objectReference: {fileID: 0}
     - target: {fileID: 7596215297033493493, guid: 05a135eab68164d34bb02b82fff3cde0,
         type: 3}
       propertyPath: m_LocalPosition.x
