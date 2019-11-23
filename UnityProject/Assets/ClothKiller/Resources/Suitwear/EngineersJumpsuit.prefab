@@ -10,7 +10,7 @@ PrefabInstance:
     - target: {fileID: 4658995992363608162, guid: de234d793cfd842599c9c8726207f217,
         type: 3}
       propertyPath: m_Name
-      value: DetectiveSuit
+      value: EngineersJumpsuit
       objectReference: {fileID: 0}
     - target: {fileID: 4658995992363608162, guid: de234d793cfd842599c9c8726207f217,
         type: 3}
@@ -75,27 +75,28 @@ PrefabInstance:
     - target: {fileID: 5063610172518221568, guid: de234d793cfd842599c9c8726207f217,
         type: 3}
       propertyPath: initialName
-      value: hard-worn suit
+      value: engineer's jumpsuit
       objectReference: {fileID: 0}
     - target: {fileID: 5063610172518221568, guid: de234d793cfd842599c9c8726207f217,
         type: 3}
       propertyPath: initialDescription
-      value: Someone who wears this means business.
+      value: It's an orange high visibility jumpsuit worn by engineers. It has minor
+        radiation shielding.
       objectReference: {fileID: 0}
     - target: {fileID: 4698281609986587030, guid: de234d793cfd842599c9c8726207f217,
         type: 3}
-      propertyPath: Armor.Melee
+      propertyPath: Armor.Rad
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4698281609986587030, guid: de234d793cfd842599c9c8726207f217,
         type: 3}
       propertyPath: Armor.Fire
-      value: 30
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 4698281609986587030, guid: de234d793cfd842599c9c8726207f217,
         type: 3}
       propertyPath: Armor.Acid
-      value: 30
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 4700669166950225366, guid: de234d793cfd842599c9c8726207f217,
         type: 3}
@@ -106,13 +107,13 @@ PrefabInstance:
         type: 3}
       propertyPath: clothData
       value: 
-      objectReference: {fileID: 11400000, guid: c6ad5241a42c02643b80e7cd2e1baa5c,
+      objectReference: {fileID: 11400000, guid: b2792f1a039f4ac4abea49d6702de97a,
         type: 2}
     - target: {fileID: 4781100657663286078, guid: de234d793cfd842599c9c8726207f217,
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 0588df996bd78384c8db1779bff7ab65,
+      objectReference: {fileID: 21300000, guid: 1e59e63ed62c87b4fa06ded5d4e6f35e,
         type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: de234d793cfd842599c9c8726207f217, type: 3}
