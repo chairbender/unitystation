@@ -4,6 +4,9 @@
 	/// </summary>
 	public enum Access
 	{
+		//default / null value
+		none = 0,
+
 		ai_upload = 1,
 
 		//all_personal_lockers = 2,
