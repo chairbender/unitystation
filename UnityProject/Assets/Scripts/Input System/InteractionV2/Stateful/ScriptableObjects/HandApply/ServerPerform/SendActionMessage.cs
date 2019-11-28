@@ -17,7 +17,7 @@ namespace StatefulInteraction.HandApply
 		[SerializeField]
 		private string othersMessage;
 
-		public override void ServerPerformInteraction(GameObject processorObject, HandApply interaction)
+		public override void ServerPerformInteraction(GameObject processorObject, global::HandApply interaction)
 		{
 			var finalOtherMessage = othersMessage.Replace("{performer}", interaction.Performer.ExpensiveName());
 			Chat.AddActionMsgToChat(interaction.Performer, performerMessage, finalOtherMessage);

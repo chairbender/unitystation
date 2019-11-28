@@ -14,7 +14,7 @@ namespace StatefulInteraction.HandApply
 		[SerializeField]
 		private HandApplyState newState;
 
-		public override void ServerPerformInteraction(GameObject processorObject, HandApply interaction)
+		public override void ServerPerformInteraction(GameObject processorObject, global::HandApply interaction)
 		{
 			var handAppliable = processorObject.GetComponent<HandAppliable>();
 			handAppliable.ServerChangeState(newState);

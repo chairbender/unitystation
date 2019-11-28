@@ -16,7 +16,7 @@ namespace StatefulInteraction.HandApply
 		[SerializeField]
 		private int amount;
 
-		public override void ServerPerformInteraction(GameObject processorObject, HandApply interaction)
+		public override void ServerPerformInteraction(GameObject processorObject, global::HandApply interaction)
 		{
 			GameObject chosenObject = null;
 			switch (participant)

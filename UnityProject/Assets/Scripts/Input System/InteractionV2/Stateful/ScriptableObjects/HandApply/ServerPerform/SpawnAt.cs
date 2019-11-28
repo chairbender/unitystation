@@ -20,7 +20,7 @@ namespace StatefulInteraction.HandApply
 		[SerializeField]
 		private int amount = 1;
 
-		public override void ServerPerformInteraction(GameObject processorObject, HandApply interaction)
+		public override void ServerPerformInteraction(GameObject processorObject, global::HandApply interaction)
 		{
 			switch (location)
 			{
