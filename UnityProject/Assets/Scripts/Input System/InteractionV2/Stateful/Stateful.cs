@@ -24,6 +24,11 @@ public class Stateful : NetworkBehaviour
 
 	private StatefulState currentState;
 
+	/// <summary>
+	/// Current state.
+	/// </summary>
+	public StatefulState CurrentState => currentState;
+
 
 	public override void OnStartClient()
 	{
