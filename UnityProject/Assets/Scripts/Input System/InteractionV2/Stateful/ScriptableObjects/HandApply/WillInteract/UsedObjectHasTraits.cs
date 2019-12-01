@@ -31,7 +31,7 @@ public class UsedObjectHasTraits : BaseWillHandApply
 
 		if (interaction.UsedObject == null) return false;
 
-		var itemAttrs = interaction.UsedObject.GetComponent<IItemAttributes>();
+		var itemAttrs = interaction.UsedObject.GetComponent<ItemAttributesV2>();
 		if (Required != null && Required.Count > 0)
 		{
 			Logger.LogTraceFormat("Requirements are {0}", Category.Interaction,
