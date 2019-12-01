@@ -16,12 +16,12 @@ public abstract class InteractionStateEntry<T> where T : Interaction
 	[Tooltip("Required. Indicates a possible state this object can be in and defines the interaction logic " +
 	         "that should be used when object is in this state.")]
 	[SerializeField]
-	private InteractionState<T> state;
+	private StatefulState state;
 
 	/// <summary>
 	/// Interaction state for this entry.
 	/// </summary>
-	public InteractionState<T> State => state;
+	public StatefulState State => state;
 
 	[Tooltip("Event hooks for adding custom logic on top of the interaction state's own logic.")]
 	[SerializeField]
