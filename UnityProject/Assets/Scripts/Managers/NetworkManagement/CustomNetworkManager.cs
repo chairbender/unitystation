@@ -122,7 +122,8 @@ public class CustomNetworkManager : NetworkManager
 		if (GameData.IsHeadlessServer || GameData.Instance.testServer)
 		{
 			//this is a headless server || testing headless (it removes the server player for localClient)
-			if (conn.address != "localClient")
+			//MIRRORUPGRADE: This was previosuly checking for conn.address = "localClient" which I don't think is valid in the new mirror
+			if (conn.connectionId == 0)
 			{
 				StartCoroutine(WaitToSpawnPlayer(conn));
 			}
