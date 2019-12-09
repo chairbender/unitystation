@@ -21,7 +21,8 @@ public class ConnectedPlayer
 
 	public static readonly ConnectedPlayer Invalid = new ConnectedPlayer
 	{
-		connection = new NetworkConnection("0.0.0.0"),
+		//MIRRORUPGRADE: Previously used "0.0.0.0" but mirror doesn't let you do that now, I think you just put 0 instead
+		connection = new NetworkConnectionToClient(0),
 		gameObject = null,
 		username = null,
 		name = "kek",

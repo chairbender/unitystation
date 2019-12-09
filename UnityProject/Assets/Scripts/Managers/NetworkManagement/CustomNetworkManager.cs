@@ -112,7 +112,8 @@ public class CustomNetworkManager : NetworkManager
 		InfoWindowMessage.Send(player.GameObject, $"Kicked: {raisins}", "Kicked");
 		Chat.AddGameWideSystemMsgToChat($"Player '{player.Name}' got kicked: {raisins}");
 		player.Connection.Disconnect();
-		player.Connection.Dispose();
+		//MIRRORUPGRADE: This doesn't seem to be needed anymore, mirror takes care of this automatically?
+		//player.Connection.Dispose();
 	}
 
 	public override void OnServerAddPlayer(NetworkConnection conn, AddPlayerMessage extraMessage)

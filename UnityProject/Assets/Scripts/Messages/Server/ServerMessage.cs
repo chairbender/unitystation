@@ -24,7 +24,7 @@ public abstract class ServerMessage : GameMessageBase
 
 		var excludedConnection = excluded.GetComponent<NetworkIdentity>().connectionToClient;
 
-		foreach (KeyValuePair<int, NetworkConnection> connection in NetworkServer.connections)
+		foreach (KeyValuePair<int, NetworkConnectionToClient> connection in NetworkServer.connections)
 		{
 			if (connection.Value != null && connection.Value != excludedConnection)
 			{

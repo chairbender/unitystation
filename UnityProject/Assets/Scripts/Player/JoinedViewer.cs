@@ -95,7 +95,8 @@ public class JoinedViewer : NetworkBehaviour
 				}
 				else
 				{
-					loggedOffPlayer.GetComponent<NetworkIdentity>().SetLocal();
+					//MIRRORUPGRADE: Doesn't appear to be needed anymore
+					//loggedOffPlayer.GetComponent<NetworkIdentity>().Loc();
 					CmdRejoin(loggedOffPlayer);
 				}
 				break;

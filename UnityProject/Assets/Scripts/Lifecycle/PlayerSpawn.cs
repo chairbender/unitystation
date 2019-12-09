@@ -333,7 +333,8 @@ public static class PlayerSpawn
 			NetworkServer.ReplacePlayerForConnection(conn, newBody);
 			if (oldBody)
 			{
-				NetworkServer.ReplacePlayerForConnection(new NetworkConnection("0.0.0.0"), oldBody);
+				//MIRRORUPGRADE: Previously used "0.0.0.0" but mirror doesn't let you do that now, I think you just put 0 instead
+				NetworkServer.ReplacePlayerForConnection(new NetworkConnectionToClient(0), oldBody);
 			}
 			TriggerEventMessage.Send(newBody, eventType);
 
