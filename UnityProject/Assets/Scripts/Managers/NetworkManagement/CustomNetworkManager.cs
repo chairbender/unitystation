@@ -278,6 +278,16 @@ public class CustomNetworkManager : NetworkManager
 		}
 	}
 
+	//MIRRORUPGRADE: We previously customized this, adding the telepathy transport shutdown logic directly
+	//to NetworkManager, I'm moving it to an override now
+	//old change was: https://github.com/unitystation/unitystation/pull/2154/commits/c84b973827ab9f67ef9ae77954ae6e5a7de86653
+	public override void OnApplicationQuit()
+	{
+		base.OnApplicationQuit();
+		TelepathyTransport telepathy = GetComponent<TelepathyTransport>();
+		telepathy.Shutdown();
+	}
+
 	//Editor item transform dance experiments
 #if UNITY_EDITOR
 	public void MoveAll()
