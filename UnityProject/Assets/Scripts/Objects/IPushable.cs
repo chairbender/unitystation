@@ -67,6 +67,46 @@ public interface IPushable {
 	void OnClientStopFollowing();
 
 	void SetVisibleServer(bool visible);
+
+	/// <summary>
+	/// Experimental. Invoked server side when the object should change which objects it is welded to, such
+	/// that the welded objects move
+	/// as one.
+	/// Invoked on every object involved in the weld. Also invoked when objects will be unwelded.
+	/// </summary>
+	/// <param name="weldInfo"></param>
+	void ServerSetWeld(WeldInfo weldInfo);
+	/// <summary>
+	/// Invoked when client learns from server which objects should be welded.
+	/// Called on every object involved in the weld. Also invoked when objects will be unwelded.
+	/// </summary>
+	/// <param name="weldInfo"></param>
+	void OnClientSetWeld(WeldInfo weldInfo);
+
+	/// <summary>
+	/// Invoked server side at the beginning of movement, when this object should be moved as the result of one of its
+	/// welded objects moving.
+	/// </summary>
+	void OnServerStartWeldMove(WeldMove weldMove);
+	/// <summary>
+	/// Invoked client side at the beginning of movement, when this object should be moved as the result of one of its
+	/// welded objects moving.
+	/// </summary>
+	void OnClientStartWeldMove(WeldMove weldMove);
+
+	/// <summary>
+	/// Invoked server side at the end of movement, when this object should have been moved as the result of one of its
+	/// welded objects moving.
+	/// </summary>
+	/// <param name="weldMove"></param>
+	void OnServerWeldMoveTileReached(WeldMove weldMove);
+	/// <summary>
+	/// Invoked client side at the end of movement, when this object should have been moved as the result of one of its
+	/// welded objects moving.
+	/// </summary>
+	/// <param name="weldMove"></param>
+	void OnClientWeldMoveTileReached(WeldMove weldMove);
+
 }
 public class Vector3Event : UnityEvent<Vector3> { }
 public class Vector3IntEvent : UnityEvent<Vector3Int> {}
