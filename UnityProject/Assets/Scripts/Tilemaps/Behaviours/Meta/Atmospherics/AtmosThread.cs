@@ -27,6 +27,8 @@ public static class AtmosThread
 		sampler = CustomSampler.Create("AtmosphericsStep");
 	}
 
+	public static UniqueQueue<MetaDataNode> UpdatedNodes => simulation.UpdatedNodes;
+
 	public static void ClearAllNodes()
 	{
 		simulation.ClearUpdateList();

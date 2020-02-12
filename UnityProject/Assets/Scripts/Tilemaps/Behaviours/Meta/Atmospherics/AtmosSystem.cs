@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using Atmospherics;
+using Tilemaps.Behaviours.Meta;
 using UnityEngine;
 
 public class AtmosSystem : SubsystemBehaviour
@@ -20,4 +21,6 @@ public class AtmosSystem : SubsystemBehaviour
 	{
 		AtmosThread.Enqueue(metaDataLayer.Get(localPosition));
 	}
+
+	public UniqueQueue<MetaDataNode> UpdatedNodes => AtmosThread.UpdatedNodes;
 }

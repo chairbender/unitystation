@@ -36,6 +36,12 @@ namespace Atmospherics
 		/// </summary>
 		private UniqueQueue<MetaDataNode> updateList = new UniqueQueue<MetaDataNode>();
 
+		/// <summary>
+		/// MetaDataNodes that we have updated so that the main thread can know about them
+		/// (main thread needs to dequeue these otherwise it'll fill up a lot)
+		/// </summary>
+		public UniqueQueue<MetaDataNode> UpdatedNodes = new UniqueQueue<MetaDataNode>();
+
 		public bool IsInUpdateList(MetaDataNode node)
 		{
 			return updateList.Contains(node);
@@ -88,6 +94,8 @@ namespace Atmospherics
 				{
 					updateList.Enqueue(nodes[i]);
 				}
+				//tell main thread our node updated
+				updatedList.Enqueue(node);
 			}
 		}
 

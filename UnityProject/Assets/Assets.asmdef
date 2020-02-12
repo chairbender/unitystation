@@ -3,6 +3,7 @@
     "references": [
         "Mirror",
         "Mirror.Components",
+        "Unity.Entities",
 	"Unity.TextMeshPro"
     ],
     "optionalUnityReferences": [],
